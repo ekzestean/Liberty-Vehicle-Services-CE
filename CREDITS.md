@@ -12,7 +12,7 @@ LibertyCityPlates is an optional compatibility target for licence plate persiste
 
 This mod does not include LibertyCityPlates files.
 
-Credit: Shvab - CP - Ash_735.
+Shvab - CP - Ash_735 are the authors of the LCP mod.
 
 ## Reference material
 
