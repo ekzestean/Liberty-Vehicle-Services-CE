@@ -147,4 +147,5 @@ The main design goals were:
 - modular configuration;
 - compatibility with GTA IV Complete Edition and FusionFix;
 - optional integration with LibertyCityPlates;
+- provide options to spend money on, because it was a problem in the original game - lack of ones;
 - preservation of episode-specific vehicle ownership.
