@@ -135,3 +135,16 @@ Licence.
 
 This project is an unofficial fan-made mod and is not affiliated with Rockstar
 Games or Take-Two Interactive.
+
+## Game design focus
+
+This mod was designed as a systems/gameplay overhaul rather than a trainer menu.
+The main design goals were:
+
+- native-style player interaction;
+- diegetic vehicle ownership;
+- economy balancing through swankness and price overrides;
+- modular configuration;
+- compatibility with GTA IV Complete Edition and FusionFix;
+- optional integration with LibertyCityPlates;
+- preservation of episode-specific vehicle ownership.
