@@ -124,7 +124,7 @@ Known limitations
 Credits
 -------
 
-See CREDITS.txt.
+See CREDITS.md.
 
 
 Licence
