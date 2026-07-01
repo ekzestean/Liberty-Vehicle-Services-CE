@@ -4827,6 +4827,9 @@ namespace LibertyVehicleServicesCE
         private float fuelStoppedSpeedThreshold = 0.45f;
         private bool fuelTestDisplayEnabled = false;
         private bool fuelHideHudDuringCutscenes = true;
+        private bool fuelAffectsUnknownVehicles = true;
+        private bool loadAddonVehicleDataFiles = true;
+        private bool useNativeVehicleDefinitionFallback = false;
         private const int FuelUpdateIntervalMs = 500;
         private const int FuelMissionEntryProbeWindowMs = 30000;
         private const int FuelMissionEntryProbeIntervalMs = 2000;
@@ -7154,7 +7157,7 @@ namespace LibertyVehicleServicesCE
         private float GetFuelCapacityGallonsForOwnedRecord(OwnedVehicleRecord rec, Vehicle v)
         {
             VehicleDefinition def = null;
-            if (IsValidVehicle(v)) def = GetVehicleDefinitionByHashOnly(v);
+            if (IsValidVehicle(v)) def = GetVehicleDefinitionByHashFast(v);
             if (def == null && rec != null && rec.ModelName != null)
             {
                 vehicleByModel.TryGetValue(rec.ModelName.Trim().ToLowerInvariant(), out def);
@@ -9733,6 +9736,7 @@ namespace LibertyVehicleServicesCE
             int hash = TryGetVehicleModelHash(v);
             VehicleDefinition def;
             if (hash != 0 && vehicleByHash.TryGetValue(hash, out def)) return def;
+            if (!useNativeVehicleDefinitionFallback) return null;
             return FindVehicleDefinitionByNativeModelCheck(v);
         }
 
@@ -10012,10 +10016,12 @@ namespace LibertyVehicleServicesCE
                 "TBOGT\\common\\data\\handling.dat",
                 "common\\data\\handling.dat"
             };
+            Dictionary<string, bool> loadedHandlingPaths = new Dictionary<string, bool>();
             for (int i = 0; i < handlingPaths.Length; i++)
             {
-                if (File.Exists(handlingPaths[i])) LoadHandlingFile(handlingPaths[i]);
+                LoadHandlingFileIfPresent(handlingPaths[i], loadedHandlingPaths);
             }
+            if (loadAddonVehicleDataFiles) LoadAddonHandlingFiles(loadedHandlingPaths);
 
             string[] vehiclePaths = new string[]
             {
@@ -10026,13 +10032,101 @@ namespace LibertyVehicleServicesCE
                 "TBOGT\\common\\data\\vehicles.ide",
                 "common\\data\\vehicles.ide"
             };
+            Dictionary<string, bool> loadedVehicleIdePaths = new Dictionary<string, bool>();
             for (int i = 0; i < vehiclePaths.Length; i++)
             {
-                if (File.Exists(vehiclePaths[i])) LoadVehiclesIde(vehiclePaths[i]);
+                LoadVehiclesIdeIfPresent(vehiclePaths[i], loadedVehicleIdePaths);
             }
+            if (loadAddonVehicleDataFiles) LoadAddonVehicleIdeFiles(loadedVehicleIdePaths);
 
             AddBuiltInEpisodeVehicleFallbacks();
             Log("Vehicle database loaded. Definitions=" + vehicleByModel.Count.ToString() + ", HandlingValues=" + monetaryByHandling.Count.ToString() + ".");
+        }
+
+        private void LoadHandlingFileIfPresent(string path, Dictionary<string, bool> loadedPaths)
+        {
+            if (path == null || path.Length == 0) return;
+            if (!File.Exists(path)) return;
+            string key = NormaliseDataPathKey(path);
+            if (loadedPaths != null)
+            {
+                if (loadedPaths.ContainsKey(key)) return;
+                loadedPaths[key] = true;
+            }
+            LoadHandlingFile(path);
+        }
+
+        private void LoadVehiclesIdeIfPresent(string path, Dictionary<string, bool> loadedPaths)
+        {
+            if (path == null || path.Length == 0) return;
+            if (!File.Exists(path)) return;
+            string key = NormaliseDataPathKey(path);
+            if (loadedPaths != null)
+            {
+                if (loadedPaths.ContainsKey(key)) return;
+                loadedPaths[key] = true;
+            }
+            LoadVehiclesIde(path);
+        }
+
+        private string NormaliseDataPathKey(string path)
+        {
+            if (path == null) return "";
+            try { return Path.GetFullPath(path).Trim().ToLowerInvariant(); }
+            catch { return path.Trim().ToLowerInvariant(); }
+        }
+
+        private void LoadAddonHandlingFiles(Dictionary<string, bool> loadedPaths)
+        {
+            string[] dirs = new string[]
+            {
+                "common\\data",
+                "update\\common\\data",
+                "TLAD\\common\\data",
+                "TBOGT\\common\\data",
+                "update\\TLAD\\common\\data",
+                "update\\TBOGT\\common\\data"
+            };
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                LoadAddonDataFiles(dirs[i], "*handling*.dat", true, loadedPaths);
+            }
+        }
+
+        private void LoadAddonVehicleIdeFiles(Dictionary<string, bool> loadedPaths)
+        {
+            string[] dirs = new string[]
+            {
+                "common\\data",
+                "update\\common\\data",
+                "TLAD\\common\\data",
+                "TBOGT\\common\\data",
+                "update\\TLAD\\common\\data",
+                "update\\TBOGT\\common\\data"
+            };
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                LoadAddonDataFiles(dirs[i], "*vehicles*.ide", false, loadedPaths);
+            }
+        }
+
+        private void LoadAddonDataFiles(string directory, string pattern, bool handling, Dictionary<string, bool> loadedPaths)
+        {
+            if (directory == null || directory.Length == 0 || pattern == null || pattern.Length == 0) return;
+            try
+            {
+                if (!Directory.Exists(directory)) return;
+                string[] files = Directory.GetFiles(directory, pattern, SearchOption.TopDirectoryOnly);
+                for (int i = 0; i < files.Length; i++)
+                {
+                    if (handling) LoadHandlingFileIfPresent(files[i], loadedPaths);
+                    else LoadVehiclesIdeIfPresent(files[i], loadedPaths);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (showDebugMessages) Log("Addon vehicle data scan failed. Directory=" + directory + ", Pattern=" + pattern + ", Error=" + ex.GetType().Name + ".");
+            }
         }
 
         private void LoadHandlingFile(string path)
@@ -11247,6 +11341,14 @@ namespace LibertyVehicleServicesCE
                 else if (k == "criticalsputterpercent") fuelCriticalSputterPercent = ClampFloat(ReadFloat(value, fuelCriticalSputterPercent), 0.0f, 100.0f);
                 else if (k == "showfueltestdisplay" || k == "fueltestdisplay") fuelTestDisplayEnabled = ReadBool(value, fuelTestDisplayEnabled);
                 else if (k == "hidehudduringcutscenes" || k == "hidefuelhudduringcutscenes") fuelHideHudDuringCutscenes = ReadBool(value, fuelHideHudDuringCutscenes);
+                else if (k == "fuelaffectsunknownvehicles" || k == "affectsunknownvehicles" || k == "allowunknownvehicles") fuelAffectsUnknownVehicles = ReadBool(value, fuelAffectsUnknownVehicles);
+                return;
+            }
+
+            if (sec == "compatibility")
+            {
+                if (k == "loadaddonvehicledatafiles" || k == "loadaddonvehicledatfiles" || k == "loadaddonvehicledata" || k == "loadcustomvehicledata") loadAddonVehicleDataFiles = ReadBool(value, loadAddonVehicleDataFiles);
+                else if (k == "usenativevehicledefinitionfallback" || k == "nativevehicledefinitionfallback") useNativeVehicleDefinitionFallback = ReadBool(value, useNativeVehicleDefinitionFallback);
                 return;
             }
 
@@ -12172,13 +12274,17 @@ namespace LibertyVehicleServicesCE
         private void AddFuelStation(string id, string name, string kind, float x, float y, float z, float radius)
         {
             FuelStation station = new FuelStation();
+            string stationKind = kind == null ? "road" : kind.Trim().ToLowerInvariant();
+            float stationRadius = Math.Max(2.0f, radius);
+            if (stationKind == "boat" || stationKind == "marine") stationRadius = Math.Max(25.0f, stationRadius);
+            else if (stationKind == "heli" || stationKind == "helicopter") stationRadius = Math.Max(12.0f, stationRadius);
             station.Id = id;
             station.Name = name;
-            station.Kind = kind == null ? "road" : kind.Trim().ToLowerInvariant();
+            station.Kind = stationKind;
             station.X = x;
             station.Y = y;
             station.Z = z;
-            station.Radius = Math.Max(2.0f, radius);
+            station.Radius = stationRadius;
             station.DamagedSeconds = 0.0f;
             fuelStations.Add(station);
         }
@@ -12752,7 +12858,7 @@ namespace LibertyVehicleServicesCE
 
         private float GetFuelTargetMinutes(Vehicle v, FuelVehicleState state)
         {
-            VehicleDefinition def = GetVehicleDefinitionByHashOnly(v);
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
             if (def != null)
             {
                 string section = def.Section == null ? "" : def.Section.ToLowerInvariant();
@@ -12841,7 +12947,7 @@ namespace LibertyVehicleServicesCE
 
         private bool ShouldUseFuelHandbrake(Vehicle v)
         {
-            VehicleDefinition def = GetVehicleDefinitionByHashOnly(v);
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
             if (def == null) return true;
             string section = def.Section == null ? "" : def.Section.ToLowerInvariant();
             if (section == "boats" || section == "heli" || section == "planes") return false;
@@ -12952,13 +13058,6 @@ namespace LibertyVehicleServicesCE
         {
             if (state == null) return;
             state.MissionConsumptionReduced = IsMissionActiveSafe(false);
-        }
-
-        private bool IsVehicleRequiredForMissionSafe(Vehicle v)
-        {
-
-
-            return false;
         }
 
         private bool TryGetPlayerDrivenFuelVehicle(out Vehicle v)
@@ -13092,8 +13191,8 @@ namespace LibertyVehicleServicesCE
 
         private bool IsFuelEligibleVehicle(Vehicle v)
         {
-            VehicleDefinition def = GetVehicleDefinitionByHashOnly(v);
-            if (def == null) return true;
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
+            if (def == null) return fuelAffectsUnknownVehicles;
             if (IsRailVehicleDefinition(def)) return false;
             string section = def.Section == null ? "" : def.Section.ToLowerInvariant();
             if (section == "cars" || section == "bikes" || section == "boats" || section == "heli" || section == "planes") return true;
@@ -13122,7 +13221,7 @@ namespace LibertyVehicleServicesCE
             FuelVehicleState state;
             if (fuelStates.TryGetValue(handle, out state) && state != null) return state;
 
-            VehicleDefinition def = GetVehicleDefinitionByHashOnly(v);
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
             state = new FuelVehicleState();
             state.Handle = handle;
             state.ModelName = def == null ? GetModelNameForVehicleFast(v) : def.ModelName;
@@ -13235,29 +13334,59 @@ namespace LibertyVehicleServicesCE
         private float GetFuelStationVerticalTolerance(FuelStation station, Vehicle v)
         {
             string kind = station == null || station.Kind == null ? "road" : station.Kind.ToLowerInvariant();
-            if (kind == "boat") return 6.0f;
-            if (kind == "heli") return 2.0f;
+            if (kind == "boat" || kind == "marine") return 10.0f;
+            if (kind == "heli" || kind == "helicopter") return 8.0f;
             return 8.0f;
         }
 
         private bool CanFuelStationServeVehicle(FuelStation station, Vehicle v)
         {
             if (station == null || !IsValidVehicle(v)) return false;
-            VehicleDefinition def = GetVehicleDefinitionByHashOnly(v);
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
             string kind = station.Kind == null ? "road" : station.Kind.ToLowerInvariant();
-            if (def == null)
-            {
-                return kind == "road";
-            }
-            string vehicleSection = def.Section == null ? "" : def.Section.ToLowerInvariant();
-            if (kind == "boat") return vehicleSection == "boats";
-            if (kind == "heli") return vehicleSection == "heli" || vehicleSection == "planes";
-            return vehicleSection == "cars" || vehicleSection == "bikes";
+            if (kind == "boat" || kind == "marine") return IsFuelBoatVehicle(v, def);
+            if (kind == "heli" || kind == "helicopter") return IsFuelAircraftVehicle(v, def);
+            return IsFuelRoadVehicle(v, def);
+        }
+
+        private bool IsFuelRoadVehicle(Vehicle v, VehicleDefinition def)
+        {
+            if (IsFuelBoatVehicle(v, def) || IsFuelAircraftVehicle(v, def)) return false;
+            if (def == null) return true;
+            string section = def.Section == null ? "" : def.Section.ToLowerInvariant();
+            return section == "cars" || section == "bikes";
+        }
+
+        private bool IsFuelBoatVehicle(Vehicle v, VehicleDefinition def)
+        {
+            string section = def == null || def.Section == null ? "" : def.Section.ToLowerInvariant();
+            if (section == "boats") return true;
+            string model = def == null || def.ModelName == null ? "" : def.ModelName.ToLowerInvariant();
+            if (ContainsAny(model, new string[] { "dinghy", "jetmax", "marquis", "predator", "reefer", "squalo", "tropic", "tug", "floater", "smuggler" })) return true;
+            int hash = TryGetVehicleModelHash(v);
+            return TryIsModelType(hash, "IS_THIS_MODEL_A_BOAT");
+        }
+
+        private bool IsFuelAircraftVehicle(Vehicle v, VehicleDefinition def)
+        {
+            string section = def == null || def.Section == null ? "" : def.Section.ToLowerInvariant();
+            if (section == "heli" || section == "planes") return true;
+            string model = def == null || def.ModelName == null ? "" : def.ModelName.ToLowerInvariant();
+            if (ContainsAny(model, new string[] { "annihilator", "maverick", "polmav", "tourmav", "buzzard", "swift", "skylift" })) return true;
+            int hash = TryGetVehicleModelHash(v);
+            return TryIsModelType(hash, "IS_THIS_MODEL_A_HELI") || TryIsModelType(hash, "IS_THIS_MODEL_A_PLANE");
+        }
+
+        private bool TryIsModelType(int hash, string nativeName)
+        {
+            if (hash == 0 || nativeName == null || nativeName.Length == 0) return false;
+            try { return Function.Call<bool>(nativeName, hash); }
+            catch { return false; }
         }
 
         private bool IsHeliFuelStation(FuelStation station)
         {
-            return station != null && station.Kind != null && station.Kind.Equals("heli", StringComparison.OrdinalIgnoreCase);
+            return station != null && station.Kind != null && (station.Kind.Equals("heli", StringComparison.OrdinalIgnoreCase) || station.Kind.Equals("helicopter", StringComparison.OrdinalIgnoreCase));
         }
 
         private bool IsHeliLandedForRefuel(Vehicle v, FuelStation station)
@@ -13266,7 +13395,7 @@ namespace LibertyVehicleServicesCE
             if (SafeVehicleSpeed(v) > fuelStoppedSpeedThreshold) return false;
             float x; float y; float z;
             if (!TryGetVehiclePosition(v, out x, out y, out z)) return false;
-            return Math.Abs(z - station.Z) <= 2.0f;
+            return Math.Abs(z - station.Z) <= GetFuelStationVerticalTolerance(station, v);
         }
 
         private float Distance2D(float ax, float ay, float bx, float by)
