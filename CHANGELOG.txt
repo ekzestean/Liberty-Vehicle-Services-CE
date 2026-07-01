@@ -1,0 +1,26 @@
+Liberty Vehicle Services CE - Changelog
+======================================
+
+v0.9.2 combined fuel compatibility build
+----------------------------------------
+
+Combined build containing both fuel compatibility patches.
+
+Fixed / changed:
+- Reduced Fuel system overhead with addon vehicle packs.
+- Disabled expensive native vehicle-definition fallback by default.
+- Added automatic loading of addon *vehicles*.ide and *handling*.dat files.
+- Added FuelAffectsUnknownVehicles option for BMX/bicycle/non-standard vehicle mods.
+- Fixed marine fuel station compatibility checks for boats.
+- Increased minimum marine fuel station radius.
+- Increased marine fuel station vertical tolerance.
+- Improved helipad fuel station compatibility checks for helicopters/aircraft.
+- Increased minimum helipad fuel station radius.
+- Increased helipad fuel station vertical tolerance.
+- Cleaned unused mission vehicle stub.
+
+Notes:
+- This is still a public beta build.
+- The addon/custom vehicle compatibility logic is intended for users with large
+  third-party vehicle packs or BMX/bicycle/non-standard vehicle mods.
+- If third-party non-car mods should not use fuel, set FuelAffectsUnknownVehicles=false.
