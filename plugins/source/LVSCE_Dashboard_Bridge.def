@@ -1,0 +1,12 @@
+LIBRARY "000_LVSCE_Dashboard_Bridge.asi"
+EXPORTS
+  LVSCE_DASH_Install
+  LVSCE_DASH_GetStatus
+  LVSCE_DASH_GetBridgeVersion
+  LVSCE_DASH_SubmitFrame
+  LVSCE_DASH_SubmitTelemetry
+  LVSCE_DASH_SetRuntimeOptions
+  LVSCE_DASH_SetLayout
+  LVSCE_DASH_GetLayout
+  LVSCE_DASH_GetLayoutDefault
+  LVSCE_DASH_ConsumeLayoutSaveRequest
