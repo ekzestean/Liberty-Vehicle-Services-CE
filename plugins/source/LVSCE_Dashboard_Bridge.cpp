@@ -204,7 +204,6 @@ static void DashboardLayoutEnsureDefaults(){
         g_layoutSelectedPart[mi]=0;
     }
 
-    /* Shipped large-element placement. Only these elements remain user-adjustable. */
     DashboardLayoutSetDefault(1,DASH_LAYOUT_PART_ALL,0.05000f,-0.14259f,1.02f);
     DashboardLayoutSetDefault(1,DASH_LAYOUT_PART_SPEED,0.015625f,0.00000f,1.00f);
     DashboardLayoutSetDefault(1,DASH_LAYOUT_PART_TACH,0.016667f,0.042593f,0.89f);
@@ -427,7 +426,7 @@ static int HookEndScene(void* dev){
 static int InstallRenderer(){
     if(g_installed) return 1;
     if(!ResolveImports()) return 0;
-    LogRaw("DASH_RENDERER_INSTALL_START version=110");
+    LogRaw("DASH_RENDERER_INSTALL_START version=111");
     u32 candidates[16]; int count=0;
     if(!FindDeviceGlobals(candidates,&count)){ LogRaw("DASH_RENDERER_INSTALL_FAILED"); return 0; }
     for(int i=0;i<count;i++){
@@ -661,8 +660,7 @@ static void DrawFuelFillTex(void* dev, DeviceFns* f, Texture* fillTex, float cx,
     if(fuel<0.0f) return;
     fuel=ClampF(fuel,0.0f,100.0f);
     float frac=fuel/100.0f;
-    // The shipped fuel-fill texture has transparent padding at both ends of the usable coloured span.
-    // Map 0..100% to that visible span so 1-4% and 96-99% are no longer visually clamped.
+
     float visibleStart=0.050f;
     float visibleEnd=0.950f;
     float clipFrac=visibleStart + (visibleEnd-visibleStart)*frac;
@@ -671,7 +669,7 @@ static void DrawFuelFillTex(void* dev, DeviceFns* f, Texture* fillTex, float cx,
     DrawTexClipLeft(dev,f,fillTex,cx,cy,size,size,0.0f,clipFrac,fillColor);
 }
 static int IsLowFuelAttentionOn(DWORD now){
-    // Brief pulse every ~2.4 seconds while fuel is low but not yet critical.
+
     DWORD t=now%2400u;
     return (t<190u) ? 1 : 0;
 }
@@ -693,13 +691,6 @@ static int SafeReadFloatLvs(int addr, float* out){ if(!out) return 0; if(!Memory
 static int SafeReadIntLvs(int addr, int* out){ if(!out) return 0; if(!MemoryReadable((void*)addr,4)) return 0; *out=*(int*)addr; return 1; }
 static int SafeReadByteLvs(int addr, u8* out){ if(!out) return 0; if(!MemoryReadable((void*)addr,1)) return 0; *out=*(u8*)addr; return 1; }
 
-
-
-
-
-
-
-
 static void ResetFusionFixTurnTelemetry(int handle, DWORD now){
     g_ffTurnHandle=handle;
     g_ffTurnCurrentBlinker=0;
@@ -714,7 +705,6 @@ static void ResetFusionFixTurnTelemetry(int handle, DWORD now){
     g_ffTurnFinalBlinkTimer=0.0f;
     g_ffTurnLastTick=now;
 }
-
 
 static void UpdateFusionFixLikeTurnIndicators(int vehicleAddress, int vehicleHandle){
     if(!pGetTickCount || vehicleAddress==0 || vehicleHandle==0) return;
@@ -809,13 +799,11 @@ static void UpdateFusionFixLikeTurnIndicators(int vehicleAddress, int vehicleHan
     else if(g_ffTurnBlinkersActive && g_ffTurnCurrentBlinker==2) g_rightIndicatorOn=g_ffTurnBlinkState ? 1 : 0;
 }
 
-
 static int IsFrontLightStateOn(int ad0, int b84, int b88, int b8c, int b90){
-    // Coarse low/front-light state only. v52 logs show 5/8/13/16/52/59/62/70 as lit/transient lamp values.
+
     if(ad0>3 || b84>3 || b88>3 || b8c>3 || b90>3) return 1;
     return 0;
 }
-
 
 static void ApplyLightTelemetryFromStates(int ad0, int b84, int b88, int b8c, int b90){
     g_lightsOn=IsFrontLightStateOn(ad0,b84,b88,b8c,b90);
@@ -885,7 +873,6 @@ static void UpdateGearDisplayFromRawTelemetry(int vehicleHandle, float speedMps,
 
     int raw=(rawC04>=0 && rawC04<=8) ? rawC04 : 999;
 
-    // Reverse display is gated by the confirmed reverse-lamp state; signed-speed and fallback gear cannot create R.
     if(reverseLampOn){
         g_rawGearReverseLatchUntil=now+180u;
         g_rawGearForwardCandidateSince=0;
@@ -919,8 +906,6 @@ static void UpdateGearDisplayFromRawTelemetry(int vehicleHandle, float speedMps,
         return;
     }
 
-    // Do not create R from fallbackGear alone. The managed signed-speed fallback has produced
-    // false R spikes during normal forward driving; it can only assist a negative signed-speed trigger above.
     if(g_rawGearLastForward>0 && speedMps>1.0f){
         g_gear=g_rawGearLastForward;
         return;
@@ -928,16 +913,6 @@ static void UpdateGearDisplayFromRawTelemetry(int vehicleHandle, float speedMps,
 
     g_gear=fallbackGear;
 }
-
-
-
-
-
-
-
-
-
-
 
 static void SubmitTelemetryEx(int vehicleAddress, int vehicleHandle, float speedMps, float signedSpeedMps, int gear, int mode){
     if(mode!=1 && mode!=4){ return; }
@@ -984,7 +959,6 @@ static void DrawNeedleForSpeed(void* dev, DeviceFns* f, float speedX, float spee
     float angle=(-130.0f+(m/maxMph)*260.0f)*0.01745329252f;
     DrawTex(dev,f,&g_needle,speedX,speedY,size,size,angle,texColor);
 }
-
 
 static int RoundToInt(float v){ return (int)(v + (v>=0.0f ? 0.5f : -0.5f)); }
 
@@ -1067,8 +1041,7 @@ static void DrawBikeFuelFillTex(void* dev, DeviceFns* f, Texture* fillTex, float
     fuel=ClampF(fuel,0.0f,100.0f);
     float frac=fuel/100.0f;
     if(frac<=0.001f) return;
-    // F is at the top and E at the bottom. The remaining fuel therefore grows upward
-    // from E; as fuel is consumed the upper segments disappear first.
+
     float visibleStart=0.128f;
     float visibleEnd=0.861f;
     float topFrac=visibleEnd-(visibleEnd-visibleStart)*frac;
@@ -1162,10 +1135,6 @@ static int InferTachEngineOffFromRaw(float speedMps, float rawRpm, float raw638,
         return 0;
     }
 
-    // Do not infer engine state from gear or speed; prefer the raw RPM field.
-    // In the tested logs 0x638 is the cleanest RPM source: 0.00 for true off, ~0.10 for idle,
-    // and higher values under load. C14/D54 can sit at 0.20 while the engine is off, so they are
-    // not allowed to keep the tach alive when 0x638 says zero.
     int rawZero=(raw638>=0.0f && raw638<=0.026f) ? 1 : 0;
     int stopped=(speedMps<0.65f) ? 1 : 0;
     if(rawZero && stopped){
@@ -1196,15 +1165,14 @@ static float TachTargetFromRaw(float speedMps, float rawRpm, int gear, DWORD now
         if(rawRpm<=1.25f) mapped=0.075f + ClampF(rawRpm,0.0f,1.0f)*0.795f;
         else mapped=ClampF(rawRpm/7000.0f,0.0f,1.0f);
         if((gear==0 || gear==-99) && speedMps<0.70f){
-            // Idle still gets a tiny analog wobble, but it is anchored to the real raw RPM.
+
             float idleMapped=0.075f + ClampF(rawRpm,0.0f,1.0f)*0.795f;
-            float w=idle - 0.1545f; // keep old neutral wobble around the 0x638~=0.10 idle mark
+            float w=idle - 0.1545f;
             mapped=idleMapped + w;
         }
         return ClampF(mapped,0.0f,0.94f);
     }
 
-    // Last-resort fallback only when raw RPM is unreadable.
     if(gear==0 || gear==-99 || speedMps<0.55f) return idle;
     if(gear<0){
         float r=ClampF(speedMps/11.5f,0.0f,1.0f);
@@ -1277,7 +1245,6 @@ static void DrawNeedleForTachApprox(void* dev, DeviceFns* f, float tachX, float 
     float angle=(-130.0f+drawFrac*260.0f)*0.01745329252f;
     DrawTex(dev,f,&g_needle,tachX,tachY,size,size,angle,texColor);
 }
-
 
 static int DashboardLayoutModeIndex(int mode){
     if(mode==1 || mode==2 || mode==3 || mode==4) return mode;
@@ -1371,9 +1338,9 @@ static void DashboardLayoutLog(const char* reason, int mode, int part, float W, 
 static void DashboardLayoutHandleInput(float W, float H){
     if(!pGetAsyncKeyState || W<100.0f || H<100.0f) return;
 
-    int toggleDown=DashboardLayoutKeyDown(0x6F); // VK_DIVIDE
+    int toggleDown=DashboardLayoutKeyDown(0x6F);
     if(!g_layoutTunerIniEnabled){
-        /* The hotkey is completely inert unless explicitly armed in the INI. */
+
         g_layoutTunerEnabled=0;
         g_layoutPrevToggleDown=(short)toggleDown;
         return;
@@ -1398,9 +1365,9 @@ static void DashboardLayoutHandleInput(float W, float H){
     }
     int mi=DashboardLayoutModeIndex(mode);
     int part=DashboardLayoutSelectedPart(mode);
-    int partDown=DashboardLayoutKeyDown(0x6A); // VK_MULTIPLY
-    int saveDown=DashboardLayoutKeyDown(0x60); // VK_NUMPAD0
-    int resetDown=DashboardLayoutKeyDown(0x65); // VK_NUMPAD5
+    int partDown=DashboardLayoutKeyDown(0x6A);
+    int saveDown=DashboardLayoutKeyDown(0x60);
+    int resetDown=DashboardLayoutKeyDown(0x65);
     if(partDown && !g_layoutPrevPartDown){
         part=DashboardLayoutNextPartForMode(mode,part);
         g_layoutSelectedPart[mi]=part;
@@ -1418,15 +1385,15 @@ static void DashboardLayoutHandleInput(float W, float H){
     g_layoutPrevSaveDown=(short)saveDown;
     g_layoutPrevResetDown=(short)resetDown;
     if(now!=0 && g_layoutLastMoveTick!=0 && now-g_layoutLastMoveTick<18u) return;
-    float stepPx=DashboardLayoutKeyDown(0x10) ? 10.0f : 2.0f; // VK_SHIFT
+    float stepPx=DashboardLayoutKeyDown(0x10) ? 10.0f : 2.0f;
     float scaleStep=DashboardLayoutKeyDown(0x10) ? 0.015f : 0.003f;
     float dx=0.0f, dy=0.0f, ds=0.0f;
-    if(DashboardLayoutKeyDown(0x64)) dx-=stepPx; // VK_NUMPAD4
-    if(DashboardLayoutKeyDown(0x66)) dx+=stepPx; // VK_NUMPAD6
-    if(DashboardLayoutKeyDown(0x68)) dy-=stepPx; // VK_NUMPAD8
-    if(DashboardLayoutKeyDown(0x62)) dy+=stepPx; // VK_NUMPAD2
-    if(DashboardLayoutKeyDown(0x67)) ds-=scaleStep; // VK_NUMPAD7
-    if(DashboardLayoutKeyDown(0x69)) ds+=scaleStep; // VK_NUMPAD9
+    if(DashboardLayoutKeyDown(0x64)) dx-=stepPx;
+    if(DashboardLayoutKeyDown(0x66)) dx+=stepPx;
+    if(DashboardLayoutKeyDown(0x68)) dy-=stepPx;
+    if(DashboardLayoutKeyDown(0x62)) dy+=stepPx;
+    if(DashboardLayoutKeyDown(0x67)) ds-=scaleStep;
+    if(DashboardLayoutKeyDown(0x69)) ds+=scaleStep;
     if(dx==0.0f && dy==0.0f && ds==0.0f) return;
     float* ox=DashboardLayoutPartOffsetXRef(mode,part);
     float* oy=DashboardLayoutPartOffsetYRef(mode,part);
@@ -1472,7 +1439,6 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
 
         DrawTex(dev,f,&g_bikeTachometerBg,tachX,tachY,tachSize,tachSize,0.0f,texColor);
 
-        /* Small elements use fixed shipped placement; only large elements are tunable. */
         float bikeWarningY=tachY+tachSize*0.024f;
         float lowX=tachX-tachSize*0.188f;
         float lowY=bikeWarningY;
@@ -1486,7 +1452,6 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
         DrawTex(dev,f,&g_engineOffTex,engineX,engineY,engineSize,engineSize,0.0f,engineOffColor);
         if(g_checkEngineOn>0) DrawTex(dev,f,&g_engineOnTex,engineX,engineY,engineSize,engineSize,0.0f,iconOnColor);
 
-        /* Warning icons belong to the dial face, below the moving needle. */
         DrawNeedleForTachApprox(dev,f,tachX,tachY,tachSize,g_speedMps,g_rpm,g_gear,texColor);
 
         float digitalX=tachX;
@@ -1547,7 +1512,6 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
     DrawTex(dev,f,&g_lowOff,lowX,lowY,lowSize,lowSize,0.0f,iconOffColor);
     if(lowFuelActive) DrawTex(dev,f,&g_lowOn,lowX,lowY,lowSize,lowSize,0.0f,iconOnColor);
 
-    /* Tachometer face icons must remain below the moving needle. */
     DrawNeedleForTachApprox(dev,f,tachX,tachY,tachSize,g_speedMps,g_rpm,g_gear,texColor);
 
     float gearX=tachX;
@@ -1556,7 +1520,6 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
 
     DrawTex(dev,f,&g_speedBg,speedX,speedY,speedSize,speedSize,0.0f,texColor);
 
-    /* Road high beam is on the speedometer face: after the background, before its needle. */
     float beamX=speedX+speedSize*0.080f;
     float beamY=speedY+speedSize*0.090f;
     float beamSize=tachSize*0.138f*1.13f;
@@ -1572,20 +1535,18 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
     DrawTex(dev,f,&g_turnRightOffTex,rightX,turnY,turnSize,turnSize,0.0f,iconOffColor);
     if(g_rightIndicatorOn>0) DrawTex(dev,f,&g_turnRightOnTex,rightX,turnY,turnSize,turnSize,0.0f,iconOnColor);
 
-    /* Speedometer face icons must remain below the moving needle. */
     DrawNeedleForSpeed(dev,f,speedX,speedY,speedSize,g_speedMps,160.0f,texColor);
 
     float fuelScale=DashboardLayoutPartScale(layoutMode,DASH_LAYOUT_PART_FUEL);
     float fuelDX=DashboardLayoutPartOffsetXPx(layoutMode,DASH_LAYOUT_PART_FUEL,W);
     float fuelDY=DashboardLayoutPartOffsetYPx(layoutMode,DASH_LAYOUT_PART_FUEL,H);
     float fuelSize=SnapF(H*0.222f*allScale*fuelScale);
-    /* Exact shared vertical centre line with the speedometer. */
+
     float fuelX=SnapF(speedX+fuelDX);
     float fuelY=SnapF(H*0.925f+allDY+fuelDY);
     DrawTex(dev,f,&g_fuelBg,fuelX,fuelY,fuelSize,fuelSize,0.0f,texColor);
     DrawFuelFillTex(dev,f,&g_fuelFill,fuelX,fuelY,fuelSize,g_fuelPercent,opacity);
 }
-
 
 static void RenderMarineDashboard(void* dev, DeviceFns* f, float W, float H, float opacity, u32 texColor){
     int layoutMode=2;
@@ -1609,7 +1570,6 @@ static void RenderMarineDashboard(void* dev, DeviceFns* f, float W, float H, flo
     DrawTex(dev,f,&g_marineFuelBg,fuelX,fuelY,fuelSize,fuelSize,0.0f,texColor);
     DrawFuelFillTex(dev,f,&g_marineFuelFill,fuelX,fuelY,fuelSize,g_fuelPercent,opacity);
 }
-
 
 static void RenderAircraftDashboard(void* dev, DeviceFns* f, float W, float H, float opacity, u32 texColor){
     int layoutMode=3;
@@ -1640,7 +1600,6 @@ static void RenderAircraftDashboard(void* dev, DeviceFns* f, float W, float H, f
         DrawNumberRightAligned(dev,f,pct,panelX+panelW*0.335f,panelY+panelH*0.095f,panelH*0.063f,3,numColor);
     }
 }
-
 
 static DWORD g_dashboardCutsceneGuardUntil=0;
 static int DashboardGuardActive(DWORD untilTick){
@@ -1730,10 +1689,9 @@ static HRESULT __stdcall HookedEndScene(void* device){
     return r;
 }
 
-
 extern "C" __declspec(dllexport) int LVSCE_DASH_Install(){ if(g_installed) return 1; g_installStarted=1; return InstallRenderer(); }
 extern "C" __declspec(dllexport) int LVSCE_DASH_GetStatus(){ return g_status; }
-extern "C" __declspec(dllexport) int LVSCE_DASH_GetBridgeVersion(){ return 110; }
+extern "C" __declspec(dllexport) int LVSCE_DASH_GetBridgeVersion(){ return 111; }
 extern "C" __declspec(dllexport) int LVSCE_DASH_SubmitFrame(int mode, int vehicleHandle, float speedMps, float fuelPercent, int lowFuel, float rpm, int gear, float heading, float altitude, int engineOn, int checkEngineOn, int lightsOn, int highBeamOn, int leftIndicatorOn, int rightIndicatorOn, float opacity){
     int oldVehicleHandle=g_vehicleHandle;
     g_mode=mode; g_vehicleHandle=vehicleHandle; g_speedMps=speedMps; g_fuelPercent=fuelPercent; g_lowFuel=lowFuel; g_rpm=rpm;
@@ -1757,7 +1715,7 @@ extern "C" __declspec(dllexport) int LVSCE_DASH_SetRuntimeOptions(int cutsceneGu
     int newIniState=layoutTunerEnabled ? 1 : 0;
     if(newIniState!=g_layoutTunerIniEnabled){
         g_layoutTunerIniEnabled=newIniState;
-        /* The INI only permits the editor; NumPad / still explicitly enters it. */
+
         g_layoutTunerEnabled=0;
         g_layoutHelpLogged=0;
         g_layoutPrevToggleDown=0;
