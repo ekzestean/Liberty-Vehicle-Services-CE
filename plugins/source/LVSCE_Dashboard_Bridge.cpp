@@ -177,7 +177,6 @@ static int g_layoutSelectedPart[DASH_LAYOUT_MODE_MAX];
 static int g_layoutDefaultsApplied=0;
 static int g_layoutTunerEnabled=0;
 static int g_layoutTunerIniEnabled=0;
-static int g_layoutTunerManualEnabled=0;
 static short g_layoutPrevToggleDown=0;
 static int g_layoutSaveRequested=0;
 
@@ -428,7 +427,7 @@ static int HookEndScene(void* dev){
 static int InstallRenderer(){
     if(g_installed) return 1;
     if(!ResolveImports()) return 0;
-    LogRaw("DASH_RENDERER_INSTALL_START version=106");
+    LogRaw("DASH_RENDERER_INSTALL_START version=110");
     u32 candidates[16]; int count=0;
     if(!FindDeviceGlobals(candidates,&count)){ LogRaw("DASH_RENDERER_INSTALL_FAILED"); return 0; }
     for(int i=0;i<count;i++){
@@ -1031,29 +1030,50 @@ static void DrawNumberCentered(void* dev, DeviceFns* f, int value, float cx, flo
     for(int i=count-1;i>=0;i--){ DrawSegmentDigit(dev,f,digits[i],x,y,h,color); x+=step; }
 }
 
-static void DrawTexClipTop(void* dev, DeviceFns* f, Texture* t, float cx, float cy, float w, float h, float angle, float fillFrac, u32 color){
+static void DrawTexClipVerticalRange(void* dev, DeviceFns* f, Texture* t, float cx, float cy, float w, float h, float angle, float topFrac, float bottomFrac, u32 color){
     if(!t||!t->loaded||!t->tex) return;
-    fillFrac=ClampF(fillFrac,0.0f,1.0f);
-    if(fillFrac<=0.001f) return;
-    float hw=w*0.5f, fullHh=h*0.5f, visH=h*fillFrac, hh=visH*0.5f;
+    topFrac=ClampF(topFrac,0.0f,1.0f);
+    bottomFrac=ClampF(bottomFrac,0.0f,1.0f);
+    if(bottomFrac<=topFrac+0.001f) return;
+    float hw=w*0.5f;
+    float visH=h*(bottomFrac-topFrac);
+    float hh=visH*0.5f;
     float c=CosF(angle), ss=SinF(angle);
-    float centerShift=(-fullHh + hh);
-    float rcx=cx - ss*centerShift; float rcy=cy + c*centerShift;
-    float xs[4]={-hw, hw, -hw, hw}; float ys[4]={-hh, -hh, hh, hh}; float us[4]={0,1,0,1}; float vs[4]={0,0,fillFrac,fillFrac}; Vertex v[4];
-    for(int i=0;i<4;i++){ float rx=xs[i]*c-ys[i]*ss; float ry=xs[i]*ss+ys[i]*c; v[i].x=SnapF(rcx+rx); v[i].y=SnapF(rcy+ry); v[i].z=0.0f; v[i].rhw=1.0f; v[i].color=color; v[i].u=us[i]; v[i].v=vs[i]; }
-    f->SetTexture(dev,0,t->tex); f->DrawPrimitiveUP(dev,D3DPT_TRIANGLESTRIP,2,v,sizeof(Vertex));
+    float centerShift=((topFrac+bottomFrac)*0.5f-0.5f)*h;
+    float rcx=cx-ss*centerShift;
+    float rcy=cy+c*centerShift;
+    float xs[4]={-hw, hw, -hw, hw};
+    float ys[4]={-hh, -hh, hh, hh};
+    float us[4]={0,1,0,1};
+    float vs[4]={topFrac,topFrac,bottomFrac,bottomFrac};
+    Vertex v[4];
+    for(int i=0;i<4;i++){
+        float rx=xs[i]*c-ys[i]*ss;
+        float ry=xs[i]*ss+ys[i]*c;
+        v[i].x=SnapF(rcx+rx);
+        v[i].y=SnapF(rcy+ry);
+        v[i].z=0.0f;
+        v[i].rhw=1.0f;
+        v[i].color=color;
+        v[i].u=us[i];
+        v[i].v=vs[i];
+    }
+    f->SetTexture(dev,0,t->tex);
+    f->DrawPrimitiveUP(dev,D3DPT_TRIANGLESTRIP,2,v,sizeof(Vertex));
 }
 
 static void DrawBikeFuelFillTex(void* dev, DeviceFns* f, Texture* fillTex, float cx, float cy, float size, float fuel, float opacity){
     if(fuel<0.0f) return;
     fuel=ClampF(fuel,0.0f,100.0f);
     float frac=fuel/100.0f;
+    if(frac<=0.001f) return;
+    // F is at the top and E at the bottom. The remaining fuel therefore grows upward
+    // from E; as fuel is consumed the upper segments disappear first.
     float visibleStart=0.128f;
     float visibleEnd=0.861f;
-    float clipFrac=visibleStart + (visibleEnd-visibleStart)*frac;
-    if(frac<=0.001f) clipFrac=0.0f;
+    float topFrac=visibleEnd-(visibleEnd-visibleStart)*frac;
     u32 fillColor=AlphaMul(0xFFFFFFFFu, opacity);
-    DrawTexClipTop(dev,f,fillTex,cx,cy,size,size,0.0f,clipFrac,fillColor);
+    DrawTexClipVerticalRange(dev,f,fillTex,cx,cy,size,size,0.0f,topFrac,visibleEnd,fillColor);
 }
 
 static void DrawGearLetterN(void* dev, DeviceFns* f, float x, float y, float h, u32 color){
@@ -1073,7 +1093,7 @@ static void DrawGearLetterR(void* dev, DeviceFns* f, float x, float y, float h, 
 static void DrawGearIndicator(void* dev, DeviceFns* f, int gear, float x, float y, float h, u32 color){
     if(gear==-1) DrawGearLetterR(dev,f,x,y,h,color);
     else if(gear==0 || gear==-99) DrawGearLetterN(dev,f,x,y,h,color);
-    else if(gear>0) DrawNumberRightAligned(dev,f,gear,x+h*0.16f,y,h,2,color);
+    else if(gear>0) DrawNumberCentered(dev,f,gear,x,y,h,2,color);
 }
 
 static float TachIdleWobble(DWORD now){
@@ -1352,9 +1372,14 @@ static void DashboardLayoutHandleInput(float W, float H){
     if(!pGetAsyncKeyState || W<100.0f || H<100.0f) return;
 
     int toggleDown=DashboardLayoutKeyDown(0x6F); // VK_DIVIDE
+    if(!g_layoutTunerIniEnabled){
+        /* The hotkey is completely inert unless explicitly armed in the INI. */
+        g_layoutTunerEnabled=0;
+        g_layoutPrevToggleDown=(short)toggleDown;
+        return;
+    }
     if(toggleDown && !g_layoutPrevToggleDown){
-        g_layoutTunerManualEnabled = g_layoutTunerManualEnabled ? 0 : 1;
-        g_layoutTunerEnabled = (g_layoutTunerIniEnabled || g_layoutTunerManualEnabled) ? 1 : 0;
+        g_layoutTunerEnabled = g_layoutTunerEnabled ? 0 : 1;
         g_layoutHelpLogged=0;
         g_layoutPrevPartDown=0;
         g_layoutPrevSaveDown=0;
@@ -1525,7 +1550,7 @@ static void RenderRoadDashboard(void* dev, DeviceFns* f, float W, float H, float
     /* Tachometer face icons must remain below the moving needle. */
     DrawNeedleForTachApprox(dev,f,tachX,tachY,tachSize,g_speedMps,g_rpm,g_gear,texColor);
 
-    float gearX=tachX+W*0.002083f;
+    float gearX=tachX;
     float gearY=tachY+tachSize*0.342f;
     DrawGearIndicator(dev,f,g_gear,gearX,gearY,tachSize*0.082f,AlphaMul(0xFFE8E8E8u,opacity));
 
@@ -1708,7 +1733,7 @@ static HRESULT __stdcall HookedEndScene(void* device){
 
 extern "C" __declspec(dllexport) int LVSCE_DASH_Install(){ if(g_installed) return 1; g_installStarted=1; return InstallRenderer(); }
 extern "C" __declspec(dllexport) int LVSCE_DASH_GetStatus(){ return g_status; }
-extern "C" __declspec(dllexport) int LVSCE_DASH_GetBridgeVersion(){ return 106; }
+extern "C" __declspec(dllexport) int LVSCE_DASH_GetBridgeVersion(){ return 110; }
 extern "C" __declspec(dllexport) int LVSCE_DASH_SubmitFrame(int mode, int vehicleHandle, float speedMps, float fuelPercent, int lowFuel, float rpm, int gear, float heading, float altitude, int engineOn, int checkEngineOn, int lightsOn, int highBeamOn, int leftIndicatorOn, int rightIndicatorOn, float opacity){
     int oldVehicleHandle=g_vehicleHandle;
     g_mode=mode; g_vehicleHandle=vehicleHandle; g_speedMps=speedMps; g_fuelPercent=fuelPercent; g_lowFuel=lowFuel; g_rpm=rpm;
@@ -1732,12 +1757,14 @@ extern "C" __declspec(dllexport) int LVSCE_DASH_SetRuntimeOptions(int cutsceneGu
     int newIniState=layoutTunerEnabled ? 1 : 0;
     if(newIniState!=g_layoutTunerIniEnabled){
         g_layoutTunerIniEnabled=newIniState;
-        g_layoutTunerEnabled=(g_layoutTunerIniEnabled || g_layoutTunerManualEnabled) ? 1 : 0;
+        /* The INI only permits the editor; NumPad / still explicitly enters it. */
+        g_layoutTunerEnabled=0;
         g_layoutHelpLogged=0;
+        g_layoutPrevToggleDown=0;
         g_layoutPrevPartDown=0;
         g_layoutPrevSaveDown=0;
         g_layoutPrevResetDown=0;
-        LogRaw(g_layoutTunerEnabled ? "DASH_LAYOUT_TUNER enabled=1 source=ini" : "DASH_LAYOUT_TUNER enabled=0 source=ini");
+        LogRaw(g_layoutTunerIniEnabled ? "DASH_LAYOUT_TUNER armed=1 source=ini" : "DASH_LAYOUT_TUNER armed=0 source=ini");
     }
     return 1;
 }
