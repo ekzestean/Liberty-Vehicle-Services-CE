@@ -1,6 +1,4 @@
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -12,7 +10,6 @@ using GTA.Native;
 
 namespace AutoWorkshopCE
 {
-
 
     internal class AutoWorkshopCEModule
     {
@@ -28,7 +25,6 @@ namespace AutoWorkshopCE
         private bool freezeVehicleDuringMenu = true;
         private bool blockPlayerControlDuringMenu = true;
         private bool probeAvailableExtras = true;
-        private bool preserveDamageDuringNonRepairWork = false;
         private bool requireRepairedVehicleForExtras = true;
         private bool showDebugMessages = false;
         private bool logToFile = true;
@@ -38,8 +34,6 @@ namespace AutoWorkshopCE
         private bool clearWantedOnScriptedService = true;
         private bool requireNoWantedForWorkshop = true;
         private bool useScriptGarage = true;
-        private bool requireLostControlForScriptGarageEntry = false;
-        private int scriptGarageEntryDelayTicks = 0;
         private bool useSeparateGarageInterior = true;
         private bool scriptedQuickRespray = true;
         private bool teleportOutOnCancel = true;
@@ -54,11 +48,8 @@ namespace AutoWorkshopCE
         private bool alignInPlaceWorkshopVehicle = true;
         private bool allowVanillaGarageFallbackInScriptGarage = false;
         private float payNSprayTriggerRadius = 4.25f;
-        private float payNSprayTriggerExitRadius = 9.0f;
-        private int vanillaAbortBurstTicks = 0;
         private int vanillaAbortBurstRemaining = 0;
-        private bool logPositionHotkeyEnabled = true;
-        private Keys keyLogPosition = Keys.F7;
+
         private string workshopEpisodeKey = "iv";
         private bool requireStoppedForScriptGarageEntry = true;
         private float scriptGarageEntryMaxSpeed = 0.35f;
@@ -96,59 +87,6 @@ namespace AutoWorkshopCE
         private float workshopExitY = -114.575f;
         private float workshopExitZ = 5.551f;
         private float workshopExitHeading = 359.533f;
-
-
-        private bool enableChasePointMechanicNpc = false;
-        private string chasePointMechanicModels = "M_Y_MECHANIC_02,M_Y_MECHANIC_01";
-        private float chasePointMechanicX = 708.652f;
-        private float chasePointMechanicY = 1506.029f;
-        private float chasePointMechanicZ = 14.395f;
-        private float chasePointMechanicHeading = 253.889f;
-        private float chasePointMechanicSpawnDistance = 90.0f;
-        private bool chasePointMechanicUseScenario = false;
-        private string chasePointMechanicScenario = "WORLD_HUMAN_VEHICLE_MECHANIC";
-        private bool placeChasePointMechanicOnGround = true;
-        private float chasePointMechanicZOffset = -1.0f;
-        private Ped chasePointMechanicPed = null;
-        private int chasePointMechanicRetryTicks = 0;
-        private int chasePointMechanicRequestTicks = 0;
-        private int chasePointMechanicModelIndex = 0;
-        private int chasePointMechanicRequestedHash = 0;
-        private bool chasePointMechanicModelRequested = false;
-
-
-        private bool enableChasePointRepairScene = false;
-        private string chasePointRepairCarModel = "esperanto";
-        private float chasePointRepairCarX = 703.083f;
-        private float chasePointRepairCarY = 1502.878f;
-        private float chasePointRepairCarZ = 14.398f;
-        private float chasePointRepairCarHeading = 175.157f;
-        private float chasePointRepairSceneSpawnDistance = 90.0f;
-        private int chasePointRepairCarHealth = 520;
-        private int chasePointRepairCarEngineHealth = 80;
-        private bool chasePointRepairCarOpenBonnet = false;
-        private int chasePointRepairCarBonnetDoorIndex = 4;
-        private int chasePointRepairCarBonnetRetryTicks = 0;
-        private int chasePointRepairCarBonnetRetryMaxTicks = 180;
-        private bool chasePointRepairCarUseControlDoor = true;
-        private float chasePointRepairCarBonnetOpenAngle = 1.0f;
-        private bool chasePointRepairCarUseAggressiveOpenDoor = false;
-        private bool chasePointRepairCarFreeze = true;
-        private string chasePointRepairCarModels = "";
-        private bool randomiseChasePointRepairCarModel = false;
-        private Vehicle chasePointRepairCar = null;
-        private string activeChasePointRepairCarModel = "";
-        private int chasePointRepairCarRetryTicks = 0;
-        private int chasePointRepairCarRequestTicks = 0;
-        private int chasePointRepairCarRequestedHash = 0;
-        private bool chasePointRepairCarModelRequested = false;
-
-
-        private bool chasePointMechanicAnchorToRepairCar = true;
-        private float chasePointMechanicRepairCarOffsetX = 0.45f;
-        private float chasePointMechanicRepairCarOffsetY = 2.75f;
-        private float chasePointMechanicRepairCarOffsetZ = -0.35f;
-        private bool chasePointMechanicFaceRepairCar = true;
 
         private int minColourID = 0;
         private int maxColourID = 133;
@@ -286,7 +224,6 @@ namespace AutoWorkshopCE
         private Random random = new Random();
 
         private bool suspendWorkshopDuringMissions = true;
-        private bool despawnWorkshopDecorationDuringMissions = true;
         private bool workshopMissionGuardWasActive = false;
         private bool cachedMissionActive = false;
         private int missionCheckCooldownTicks = 0;
@@ -300,25 +237,6 @@ namespace AutoWorkshopCE
         private bool missionStateSourceLogged = false;
         private bool useNativeMissionFlagGuard = true;
         private bool missionNativeFlagSourceLogged = false;
-
-        private bool chasePointMechanicUseWorkCycle = true;
-        private int chasePointMechanicWorkTicks = 900;
-        private int chasePointMechanicGarageTicks = 260;
-        private int chasePointMechanicWalkTicks = 360;
-        private float chasePointMechanicGarageX = 706.600f;
-        private float chasePointMechanicGarageY = 1510.900f;
-        private float chasePointMechanicGarageZ = 14.395f;
-        private float chasePointMechanicGarageHeading = 180.000f;
-        private int chasePointMechanicCycleState = 0;
-        private int chasePointMechanicCycleTicks = 0;
-        private bool chasePointMechanicCycleTaskIssued = false;
-
-        private bool enableChasePointExtraStaff = false;
-        private string chasePointExtraStaffModels = "M_Y_MECHANIC_01,M_Y_MECHANIC_02,M_Y_GARAGE";
-        private string chasePointExtraStaffSpawns = "-3.20,3.40,-0.35,95;-6.20,-1.90,-0.35,15;3.80,-3.20,-0.35,260";
-        private float chasePointExtraStaffSpawnDistance = 90.0f;
-        private int chasePointExtraStaffRetryTicks = 0;
-        private List<Ped> chasePointExtraStaffPeds = new List<Ped>();
 
         private class WorkshopTrigger
         {
@@ -360,7 +278,6 @@ namespace AutoWorkshopCE
 
         public AutoWorkshopCEModule()
         {
-
 
             enabled = false;
             logToFile = false;
@@ -406,20 +323,17 @@ namespace AutoWorkshopCE
             {
                 RefreshWorkshopStoryProgress(false);
 
-
                 if (preMenuCooldownTicks > 0) preMenuCooldownTicks--;
                 if (missionGuardPromptCooldownTicks > 0) missionGuardPromptCooldownTicks--;
                 UpdatePauseMenuGuard(serviceOpen);
                 if (vanillaAbortBurstRemaining > 0)
                 {
 
-
                     vanillaAbortBurstRemaining--;
                 }
 
                 if (serviceOpen)
                 {
-
 
                     int statWhileMenu = SafeGetResprayStat();
                     if (!useScriptGarage && serviceBeforeVanilla && haveResprayStat && statWhileMenu > lastResprayStat)
@@ -434,9 +348,6 @@ namespace AutoWorkshopCE
                 }
 
                 UpdateWorkshopBlip();
-                UpdateChasePointRepairScene();
-                UpdateChasePointMechanicNpc();
-                UpdateChasePointExtraStaffPeds();
 
                 if (!Player.Character.isSittingInVehicle())
                 {
@@ -484,7 +395,6 @@ namespace AutoWorkshopCE
                     {
                         workshopMissionGuardWasActive = true;
                         if (showDebugMessages) Log("MISSION_GUARD active: workshop service interaction suspended.");
-                        if (despawnWorkshopDecorationDuringMissions) CleanupChasePointDecoration("mission guard");
                     }
                     if (serviceOpen) CloseMenu(false);
                     if (showEntryPrompt) DrawEntryPrompt("Garage unavailable during missions.");
@@ -566,7 +476,6 @@ namespace AutoWorkshopCE
                     preMenuOpenedForCurrentGarageInteraction = false;
                 }
 
-
                 if (openMenuBeforeVanillaPayNSpray && triggerPreMenuOnGarageInteraction && interactingWithGarage && preMenuInteractionTicks >= preMenuOpenDelayTicks && !suppressPreMenuUntilGarageExit && !pendingService && !preMenuOpenedForCurrentGarageInteraction && preMenuCooldownTicks <= 0)
                 {
                     preMenuOpenedForCurrentGarageInteraction = true;
@@ -574,7 +483,6 @@ namespace AutoWorkshopCE
                     Log("Opened pre-service menu on garage interaction. Respray stat=" + currentResprayStat.ToString() + ".");
                     return;
                 }
-
 
                 if (detectVanillaPayNSpray && haveResprayStat && currentResprayStat > lastResprayStat)
                 {
@@ -640,13 +548,11 @@ namespace AutoWorkshopCE
                     return;
                 }
 
-
                 if (interactingWithGarage || !Player.CanControlCharacter)
                 {
                     wasInteractingWithGarage = interactingWithGarage;
                     return;
                 }
-
 
                 TrackVehicle(v);
                 lastResprayStat = currentResprayStat;
@@ -663,12 +569,6 @@ namespace AutoWorkshopCE
         private void OnKeyDown(object sender, GTA.KeyEventArgs e)
         {
             if (!enabled) return;
-
-            if (logPositionHotkeyEnabled && e.Key == keyLogPosition)
-            {
-                LogCurrentVehiclePositionForConfig();
-                return;
-            }
 
             if (serviceOpen)
             {
@@ -740,35 +640,6 @@ namespace AutoWorkshopCE
                     pauseMenuDisableUnavailableLogged = true;
                     Log("Pause-menu suppression unavailable: " + ex.GetType().Name + ".");
                 }
-            }
-        }
-
-        private void LogCurrentVehiclePositionForConfig()
-        {
-            try
-            {
-                if (!Player.Character.isSittingInVehicle())
-                {
-                    Notify("Position log: not in vehicle.");
-                    return;
-                }
-                Vehicle v = Player.Character.CurrentVehicle;
-                float x;
-                float y;
-                float z;
-                if (!TryGetVehiclePosition(v, out x, out y, out z))
-                {
-                    Notify("Position log failed.");
-                    return;
-                }
-                float h = SafeGetVehicleHeading(v, 0.0f);
-                string line = "POSITION X=" + x.ToString("0.000") + ", Y=" + y.ToString("0.000") + ", Z=" + z.ToString("0.000") + ", H=" + h.ToString("0.000") + ". INI trigger token: WorkshopTrigger=Name," + x.ToString("0.000") + "," + y.ToString("0.000") + "," + z.ToString("0.000") + ",5.0," + h.ToString("0.000") + ". Exit token: WorkshopExit=" + x.ToString("0.000") + "," + y.ToString("0.000") + "," + z.ToString("0.000") + "," + h.ToString("0.000") + ".";
-                Notify("Position written to LibertyVehicleServicesCE.log.");
-                Log(line);
-            }
-            catch (Exception ex)
-            {
-                Log("Position log error: " + ex.GetType().Name + ".");
             }
         }
 
@@ -1124,7 +995,6 @@ namespace AutoWorkshopCE
         {
             if (IsColourMenu()) ApplyPreviewColour();
 
-
         }
 
         private void OpenServiceMenu(Vehicle v, bool beforeVanilla)
@@ -1334,7 +1204,6 @@ namespace AutoWorkshopCE
             suppressPreMenuUntilGarageExit = true;
             suppressPostServiceFallbackOnce = true;
 
-
             RestoreOriginalServiceState();
             serviceOpen = false;
             serviceBeforeVanilla = false;
@@ -1453,21 +1322,6 @@ namespace AutoWorkshopCE
                 if (IsExtraOn(serviceVehicle, pair.Key) != pair.Value) SetExtraState(serviceVehicle, pair.Key, pair.Value);
             }
             pendingPreviewExtra = -1;
-        }
-
-        private void RestoreUncommittedExtraPreviews()
-        {
-            if (!IsValidVehicle(serviceVehicle)) return;
-            bool restoredAny = false;
-            foreach (KeyValuePair<int, bool> pair in serviceCommittedExtras)
-            {
-                if (IsExtraOn(serviceVehicle, pair.Key) != pair.Value)
-                {
-                    SetExtraState(serviceVehicle, pair.Key, pair.Value);
-                    restoredAny = true;
-                }
-            }
-            if (restoredAny) pendingPreviewExtra = -1;
         }
 
         private void CommitPreviewColour()
@@ -1659,7 +1513,6 @@ namespace AutoWorkshopCE
             return "EXECUTIVE LIFESTYLE AUTOS";
         }
 
-
         private string KeyLabel(Keys key)
         {
             if (key == Keys.Back) return "Backspace";
@@ -1682,11 +1535,6 @@ namespace AutoWorkshopCE
         private string WorkshopBackHint(string action)
         {
             return KeyLabel(keyExit) + " " + action;
-        }
-
-        private string WorkshopColourHint()
-        {
-            return KeyLabel(keyUp) + "/" + KeyLabel(keyDown) + "/" + KeyLabel(keyLeft) + "/" + KeyLabel(keyRight) + " preview   " + KeyLabel(keySelect) + " apply   " + KeyLabel(keyExit) + " back";
         }
 
         private string WorkshopExtrasHint()
@@ -1830,7 +1678,6 @@ namespace AutoWorkshopCE
         private void DrawScreenText(float x, float y, string text, float scale, int r, int g, int b, int a, bool centre)
         {
 
-
             DrawScreenTextStyled(x, y, text, scale * 0.74f, scale * 1.10f, r, g, b, a, centre);
         }
 
@@ -1886,7 +1733,6 @@ namespace AutoWorkshopCE
                 b = vehicleColourB[id];
                 return;
             }
-
 
             int shade = 55 + (Math.Abs(id) % 10) * 18;
             r = ClampByte(shade);
@@ -1949,7 +1795,6 @@ namespace AutoWorkshopCE
 
                         if (IsHornInputPressed(v) && activeTrigger == null && preMenuCooldownTicks <= 0)
                         {
-
 
                             if (suspendWorkshopDuringMissions && IsMissionActiveFreshSafe())
                             {
@@ -2017,7 +1862,6 @@ namespace AutoWorkshopCE
                 haveResprayStat = true;
                 return;
             }
-
 
             if (!haveTrackedColours || trackedVehicle == null || !trackedVehicle.Exists())
             {
@@ -2245,7 +2089,6 @@ namespace AutoWorkshopCE
             try
             {
 
-
                 SafeTeleportVehicle(v, trigger.X, trigger.Y, trigger.Z + 0.05f, trigger.Heading);
                 try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
                 try { Function.Call("WARP_CHAR_INTO_CAR", Player.Character, v); } catch { }
@@ -2432,7 +2275,6 @@ namespace AutoWorkshopCE
         private bool IsHornInputPressed(Vehicle v)
         {
 
-
             try { return Game.isGameKeyPressed(GameKey.SoundHorn); } catch { return false; }
         }
 
@@ -2481,7 +2323,6 @@ namespace AutoWorkshopCE
                 Log("Coordinate blip AddBlip reflection failed for " + purpose + ": " + ex.GetType().Name + ".");
             }
 
-
             return null;
         }
 
@@ -2497,10 +2338,8 @@ namespace AutoWorkshopCE
 
         }
 
-
         private void DrawEntryPrompt(string text)
         {
-
 
             try
             {
@@ -2545,11 +2384,6 @@ namespace AutoWorkshopCE
             haveTrackedColours = true;
         }
 
-        private bool ColoursDiffer(ColorIndex a, ColorIndex b)
-        {
-            return a.Index != b.Index;
-        }
-
         private void RestoreColours(Vehicle v, ColorIndex baseColour, ColorIndex specular, ColorIndex feature1, ColorIndex feature2)
         {
             if (!IsValidVehicle(v)) return;
@@ -2588,26 +2422,6 @@ namespace AutoWorkshopCE
             if (!requireRepairedVehicleForExtras) return true;
             return !VehicleNeedsRepair(v);
         }
-
-        private void CaptureVehicleMechanicalDamage(Vehicle v, out int health, out int engineHealth, out int petrolTankHealth)
-        {
-            health = 1000;
-            engineHealth = 1000;
-            petrolTankHealth = 1000;
-            if (!preserveDamageDuringNonRepairWork || !IsValidVehicle(v)) return;
-            try { health = v.Health; } catch { }
-            try { engineHealth = (int)v.EngineHealth; } catch { }
-            try { petrolTankHealth = (int)v.PetrolTankHealth; } catch { }
-        }
-
-        private void RestoreVehicleMechanicalDamage(Vehicle v, int health, int engineHealth, int petrolTankHealth)
-        {
-            if (!preserveDamageDuringNonRepairWork || !IsValidVehicle(v)) return;
-            try { v.Health = health; } catch { }
-            try { v.EngineHealth = engineHealth; } catch { }
-            try { v.PetrolTankHealth = petrolTankHealth; } catch { }
-        }
-
         private void BuildAvailableExtras()
         {
             availableExtras.Clear();
@@ -2729,7 +2543,6 @@ namespace AutoWorkshopCE
 
             bool workshop = serviceInScriptGarage || scriptGarageActive;
             int charge = 0;
-
 
             if (currentOn && !committedOn)
             {
@@ -2899,7 +2712,6 @@ namespace AutoWorkshopCE
                 return (dx * dx + dy * dy + dz * dz) < 4.0f;
             }
 
-
             return true;
         }
 
@@ -2954,7 +2766,6 @@ namespace AutoWorkshopCE
                 Log("Garage activity abort failed: " + ex.GetType().Name + ".");
             }
         }
-
 
         private int SafeGetWantedLevel()
         {
@@ -3088,7 +2899,6 @@ namespace AutoWorkshopCE
             catch { }
         }
 
-
         private string GetRepairPriceLabel(Vehicle v)
         {
             if (!IsValidVehicle(v)) return "$" + GetWorkshopPrice(priceRepair).ToString();
@@ -3155,16 +2965,6 @@ namespace AutoWorkshopCE
             return value;
         }
 
-        private int GetEffectivePriceForVehicle(Vehicle v, int basePrice)
-        {
-            int cleanBase = Math.Max(0, basePrice);
-            if (!useSwanknessPriceModifiers || cleanBase == 0) return cleanBase;
-            float multiplier = GetVehiclePriceMultiplier(v);
-            int value = (int)Math.Round(cleanBase * multiplier);
-            if (value < 0) value = 0;
-            return value;
-        }
-
         private void ResolveCurrentVehiclePriceClass(Vehicle v)
         {
             currentVehicleSwankness = GetVehicleSwankness(v);
@@ -3180,14 +2980,6 @@ namespace AutoWorkshopCE
             }
             Log("Workshop price class: swankness=" + currentVehicleSwankness.ToString() + ", category=" + currentVehiclePriceCategory + ", multiplier=" + currentVehiclePriceMultiplier.ToString("0.00") + ". Effective prices: repair=" + GetRepairPriceLabel(v) + ", body=$" + GetWorkshopPrice(priceRepaintBase).ToString() + ", extra add=$" + GetWorkshopPrice(priceToggleExtra).ToString() + ".");
         }
-
-        private float GetVehiclePriceMultiplier(Vehicle v)
-        {
-            int swankness = GetVehicleSwankness(v);
-            if (swankness < 0) return swanknessFallbackMultiplier;
-            return GetMultiplierForSwankness(swankness);
-        }
-
         private int GetVehicleSwankness(Vehicle v)
         {
             if (!IsValidVehicle(v)) return -1;
@@ -3287,23 +3079,39 @@ namespace AutoWorkshopCE
             {
                 swanknessByModelHash.Clear();
                 swanknessByModelName.Clear();
+                vehicleSwanknessLoaded = false;
+
                 string[] paths = new string[] {
+                    "common\\data\\vehicles.ide",
+                    "TLAD\\common\\data\\vehicles.ide",
+                    "TBOGT\\common\\data\\vehicles.ide",
                     "update\\common\\data\\vehicles.ide",
-                    "common\\data\\vehicles.ide"
+                    "update\\TLAD\\common\\data\\vehicles.ide",
+                    "update\\TBOGT\\common\\data\\vehicles.ide"
                 };
+
+                int totalLoaded = 0;
+                int filesLoaded = 0;
                 for (int i = 0; i < paths.Length; i++)
                 {
                     string path = paths[i];
                     if (!File.Exists(path)) continue;
                     int loaded = LoadVehicleSwanknessDataFromFile(path);
-                    if (loaded > 0)
-                    {
-                        vehicleSwanknessLoaded = true;
-                        Log("Loaded vehicle swankness table from " + path + " (" + loaded.ToString() + " entries). Price multipliers: 0=" + swankness0Multiplier.ToString("0.00") + ", 1=" + swankness1Multiplier.ToString("0.00") + ", 2=" + swankness2Multiplier.ToString("0.00") + ", 3=" + swankness3Multiplier.ToString("0.00") + ", 4=" + swankness4Multiplier.ToString("0.00") + ", 5+=" + swankness5PlusMultiplier.ToString("0.00") + ".");
-                        return;
-                    }
+                    if (loaded <= 0) continue;
+                    totalLoaded += loaded;
+                    filesLoaded++;
+                    Log("Loaded vehicle swankness table from " + path + " (" + loaded.ToString() + " entries).");
                 }
-                Log("Vehicle swankness table not found. Prices use fallback multiplier " + swanknessFallbackMultiplier.ToString("0.00") + ".");
+
+                vehicleSwanknessLoaded = swanknessByModelHash.Count > 0;
+                if (vehicleSwanknessLoaded)
+                {
+                    Log("Vehicle swankness database ready. Files=" + filesLoaded.ToString() + ", parsed entries=" + totalLoaded.ToString() + ". Price multipliers: 0=" + swankness0Multiplier.ToString("0.00") + ", 1=" + swankness1Multiplier.ToString("0.00") + ", 2=" + swankness2Multiplier.ToString("0.00") + ", 3=" + swankness3Multiplier.ToString("0.00") + ", 4=" + swankness4Multiplier.ToString("0.00") + ", 5+=" + swankness5PlusMultiplier.ToString("0.00") + ".");
+                }
+                else
+                {
+                    Log("Vehicle swankness tables were not found. Prices use fallback multiplier " + swanknessFallbackMultiplier.ToString("0.00") + ".");
+                }
             }
             catch (Exception ex)
             {
@@ -3424,7 +3232,6 @@ namespace AutoWorkshopCE
                 else
                 {
 
-
                     if (lower == "end") break;
                     if (lower == "car4" || lower == "car3" || lower == "car2" || lower.StartsWith("car") && lower.Length <= 6) continue;
                 }
@@ -3445,7 +3252,6 @@ namespace AutoWorkshopCE
                 int r;
                 int g;
                 int b;
-
 
                 if (numeric >= 4 && nums[0] >= 0 && nums[0] < 256 && nums[1] >= 0 && nums[1] <= 255 && nums[2] >= 0 && nums[2] <= 255 && nums[3] >= 0 && nums[3] <= 255)
                 {
@@ -3483,7 +3289,6 @@ namespace AutoWorkshopCE
             if (slash >= 0) line = line.Substring(0, slash);
             return line;
         }
-
 
         private string DetectWorkshopEpisodeKey()
         {
@@ -3647,521 +3452,11 @@ namespace AutoWorkshopCE
             return "workshop_" + index.ToString() + "_" + trigger.Name;
         }
 
-        private int GetWorkshopTriggerIndex(WorkshopTrigger trigger)
-        {
-            if (trigger == null) return -1;
-            for (int i = 0; i < payNSprayTriggers.Count; i++)
-            {
-                if (System.Object.ReferenceEquals(payNSprayTriggers[i], trigger)) return i;
-            }
-            return -1;
-        }
-
-        private string GetWorkshopDiscoveryKey(WorkshopTrigger trigger, int index)
-        {
-            if (index < 0) index = GetWorkshopTriggerIndex(trigger);
-            string name = trigger == null ? "" : trigger.Name;
-            string clean = SanitiseDiscoveryKey(name);
-            if (clean.Length == 0) clean = "workshop";
-            return "workshop_" + Math.Max(0, index).ToString() + "_" + clean;
-        }
-
-        private string SanitiseDiscoveryKey(string text)
-        {
-            if (text == null) return "";
-            text = text.Trim().ToLowerInvariant();
-            List<char> chars = new List<char>();
-            bool lastUnderscore = false;
-            for (int i = 0; i < text.Length; i++)
-            {
-                char c = text[i];
-                bool ok = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
-                if (ok)
-                {
-                    chars.Add(c);
-                    lastUnderscore = false;
-                }
-                else if (!lastUnderscore && chars.Count > 0)
-                {
-                    chars.Add('_');
-                    lastUnderscore = true;
-                }
-            }
-            while (chars.Count > 0 && chars[chars.Count - 1] == '_') chars.RemoveAt(chars.Count - 1);
-            return new string(chars.ToArray());
-        }
-
         private string GetWorkshopBlipName(WorkshopTrigger trigger, int index)
         {
             if (index == 0 && !String.IsNullOrEmpty(workshopBlipName)) return workshopBlipName;
             if (trigger != null && !String.IsNullOrEmpty(trigger.Name)) return trigger.Name;
             return "Auto workshop";
-        }
-
-        private Vector3 GetChasePointMechanicSpawnPosition()
-        {
-            if (chasePointMechanicAnchorToRepairCar)
-            {
-                return GetOffsetPosition(chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ, chasePointRepairCarHeading,
-                    chasePointMechanicRepairCarOffsetX,
-                    chasePointMechanicRepairCarOffsetY,
-                    chasePointMechanicRepairCarOffsetZ);
-            }
-            return new Vector3(chasePointMechanicX, chasePointMechanicY, chasePointMechanicZ + chasePointMechanicZOffset);
-        }
-
-        private float GetChasePointMechanicHeading()
-        {
-            if (chasePointMechanicAnchorToRepairCar && chasePointMechanicFaceRepairCar)
-            {
-                Vector3 pos = GetChasePointMechanicSpawnPosition();
-                return GetHeadingFromTo(pos.X, pos.Y, chasePointRepairCarX, chasePointRepairCarY);
-            }
-            return chasePointMechanicHeading;
-        }
-
-        private Vector3 GetOffsetPosition(float baseX, float baseY, float baseZ, float heading, float localX, float localY, float localZ)
-        {
-            double r = heading * Math.PI / 180.0;
-
-            float forwardX = (float)Math.Sin(r);
-            float forwardY = (float)Math.Cos(r);
-            float rightX = (float)Math.Cos(r);
-            float rightY = -(float)Math.Sin(r);
-            return new Vector3(
-                baseX + rightX * localX + forwardX * localY,
-                baseY + rightY * localX + forwardY * localY,
-                baseZ + localZ);
-        }
-
-        private float GetHeadingFromTo(float fromX, float fromY, float toX, float toY)
-        {
-            double dx = toX - fromX;
-            double dy = toY - fromY;
-            double angle = Math.Atan2(dx, dy) * 180.0 / Math.PI;
-            if (angle < 0.0) angle += 360.0;
-            return (float)angle;
-        }
-
-        private void UpdateChasePointRepairScene()
-        {
-            if (!enableChasePointRepairScene || !enableChasePointWorkshop) return;
-            if (serviceOpen || scriptGarageTransitioning) return;
-            try { if (Function.Call<bool>("IS_PAUSE_MENU_ACTIVE")) return; } catch { }
-
-            if (IsValidVehicle(chasePointRepairCar))
-            {
-                UpdateRepairCarBonnet();
-                return;
-            }
-            if (chasePointRepairCarRetryTicks > 0) { chasePointRepairCarRetryTicks--; return; }
-
-            try
-            {
-                if (Player.Character == null || !Player.Character.Exists()) return;
-                Vector3 p = Player.Character.Position;
-                float dx = p.X - chasePointRepairCarX;
-                float dy = p.Y - chasePointRepairCarY;
-                float dz = p.Z - chasePointRepairCarZ;
-                float max = Math.Max(20.0f, chasePointRepairSceneSpawnDistance);
-                if ((dx * dx + dy * dy) > (max * max) || Math.Abs(dz) > 35.0f) return;
-            }
-            catch { return; }
-
-            string repairModel = GetRepairCarModelCandidate();
-            if (!PrepareRepairCarModel(repairModel)) return;
-
-            chasePointRepairCar = TryCreateVehicleByName(repairModel, new Vector3(chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ), chasePointRepairCarHeading);
-            if (IsValidVehicle(chasePointRepairCar))
-            {
-                activeChasePointRepairCarModel = repairModel;
-                ConfigureRepairSceneCar(chasePointRepairCar);
-                Log("Chase Point decorative repair car created. Model=" + repairModel + ".");
-                return;
-            }
-
-            Log("Chase Point decorative repair car creation failed after model load. Model=" + repairModel + ".");
-            chasePointRepairCarRetryTicks = 900;
-            chasePointRepairCarRequestedHash = 0;
-            chasePointRepairCarModelRequested = false;
-            chasePointRepairCarRequestTicks = 0;
-        }
-
-        private string GetRepairCarModelCandidate()
-        {
-            string configured = chasePointRepairCarModels;
-            if (configured == null || configured.Trim().Length == 0) configured = chasePointRepairCarModel;
-            string[] models = SplitCsv(configured);
-            if (models.Length == 0) return chasePointRepairCarModel;
-            if (!randomiseChasePointRepairCarModel) return models[0];
-            try
-            {
-                int seed = Environment.TickCount ^ (int)(chasePointRepairCarX * 10.0f) ^ (int)(chasePointRepairCarY * 10.0f);
-                Random rng = new Random(seed);
-                return models[Math.Abs(rng.Next()) % models.Length];
-            }
-            catch { return models[0]; }
-        }
-
-        private bool PrepareRepairCarModel(string modelName)
-        {
-            if (modelName == null || modelName.Trim().Length == 0)
-            {
-                chasePointRepairCarRetryTicks = 900;
-                return false;
-            }
-
-            int hash = 0;
-            try { hash = Function.Call<int>("GET_HASH_KEY", modelName.Trim()); } catch { hash = 0; }
-            if (hash == 0)
-            {
-                Log("Chase Point repair car model has zero hash: " + modelName + ".");
-                chasePointRepairCarRetryTicks = 900;
-                return false;
-            }
-
-            bool loaded = false;
-            try { loaded = Function.Call<bool>("HAS_MODEL_LOADED", hash); } catch { loaded = false; }
-            if (loaded) return true;
-
-            if (!chasePointRepairCarModelRequested || chasePointRepairCarRequestedHash != hash)
-            {
-                chasePointRepairCarModelRequested = true;
-                chasePointRepairCarRequestedHash = hash;
-                chasePointRepairCarRequestTicks = 0;
-                try { Function.Call("REQUEST_MODEL", hash); } catch (Exception ex) { Log("REQUEST_MODEL failed for repair car " + modelName + ": " + ex.GetType().Name + "."); }
-                Log("Requested Chase Point repair car model: " + modelName + ".");
-                return false;
-            }
-
-            chasePointRepairCarRequestTicks++;
-            if (chasePointRepairCarRequestTicks > 300)
-            {
-                Log("Chase Point repair car model load timed out: " + modelName + ".");
-                chasePointRepairCarRetryTicks = 900;
-                chasePointRepairCarRequestedHash = 0;
-                chasePointRepairCarModelRequested = false;
-                chasePointRepairCarRequestTicks = 0;
-            }
-            return false;
-        }
-
-        private void UpdateChasePointMechanicNpc()
-        {
-            if (!enableChasePointMechanicNpc || !enableChasePointWorkshop) return;
-            if (serviceOpen || scriptGarageTransitioning) return;
-            try { if (Function.Call<bool>("IS_PAUSE_MENU_ACTIVE")) return; } catch { }
-
-            if (IsValidPed(chasePointMechanicPed))
-            {
-                UpdateChasePointMechanicWorkCycle();
-                return;
-            }
-            if (chasePointMechanicRetryTicks > 0) { chasePointMechanicRetryTicks--; return; }
-
-            try
-            {
-                if (Player.Character == null || !Player.Character.Exists()) return;
-                Vector3 p = Player.Character.Position;
-                float dx = p.X - chasePointMechanicX;
-                float dy = p.Y - chasePointMechanicY;
-                float dz = p.Z - chasePointMechanicZ;
-                float max = Math.Max(20.0f, chasePointMechanicSpawnDistance);
-                if ((dx * dx + dy * dy) > (max * max) || Math.Abs(dz) > 35.0f) return;
-            }
-            catch { return; }
-
-            string modelName = GetMechanicModelCandidate();
-            if (String.IsNullOrEmpty(modelName))
-            {
-                chasePointMechanicRetryTicks = 900;
-                Log("Chase Point mechanic NPC creation skipped: no model candidates configured.");
-                return;
-            }
-
-            if (!PrepareMechanicModel(modelName)) return;
-
-            Vector3 mechanicSpawn = GetChasePointMechanicSpawnPosition();
-            chasePointMechanicPed = TryCreatePedByName(modelName, mechanicSpawn, GetChasePointMechanicHeading());
-            if (IsValidPed(chasePointMechanicPed))
-            {
-                ConfigureMechanicPed(chasePointMechanicPed);
-                Log("Chase Point mechanic NPC created. Model=" + modelName + ".");
-                return;
-            }
-
-            Log("Chase Point mechanic NPC creation failed after model load. Model=" + modelName + ".");
-            AdvanceMechanicModelCandidate();
-            chasePointMechanicRetryTicks = 300;
-        }
-
-        private bool PrepareMechanicModel(string modelName)
-        {
-            int hash = 0;
-            try { hash = Function.Call<int>("GET_HASH_KEY", modelName); } catch { hash = 0; }
-            if (hash == 0)
-            {
-                Log("Chase Point mechanic model has zero hash: " + modelName + ".");
-                AdvanceMechanicModelCandidate();
-                chasePointMechanicRetryTicks = 300;
-                return false;
-            }
-
-            bool loaded = false;
-            try { loaded = Function.Call<bool>("HAS_MODEL_LOADED", hash); } catch { loaded = false; }
-            if (loaded) return true;
-
-            if (!chasePointMechanicModelRequested || chasePointMechanicRequestedHash != hash)
-            {
-                chasePointMechanicModelRequested = true;
-                chasePointMechanicRequestedHash = hash;
-                chasePointMechanicRequestTicks = 0;
-                try { Function.Call("REQUEST_MODEL", hash); } catch (Exception ex) { Log("REQUEST_MODEL failed for mechanic " + modelName + ": " + ex.GetType().Name + "."); }
-                Log("Requested Chase Point mechanic model: " + modelName + ".");
-                return false;
-            }
-
-            chasePointMechanicRequestTicks++;
-            if (chasePointMechanicRequestTicks > 300)
-            {
-                Log("Chase Point mechanic model load timed out: " + modelName + ". Trying next candidate.");
-                AdvanceMechanicModelCandidate();
-                chasePointMechanicRetryTicks = 120;
-            }
-            return false;
-        }
-
-        private string GetMechanicModelCandidate()
-        {
-            string[] models = SplitCsv(chasePointMechanicModels);
-            if (models.Length == 0) return "";
-            if (chasePointMechanicModelIndex < 0) chasePointMechanicModelIndex = 0;
-            if (chasePointMechanicModelIndex >= models.Length) chasePointMechanicModelIndex = 0;
-            return models[chasePointMechanicModelIndex];
-        }
-
-        private void AdvanceMechanicModelCandidate()
-        {
-            string[] models = SplitCsv(chasePointMechanicModels);
-            if (models.Length == 0)
-            {
-                chasePointMechanicModelIndex = 0;
-            }
-            else
-            {
-                chasePointMechanicModelIndex++;
-                if (chasePointMechanicModelIndex >= models.Length) chasePointMechanicModelIndex = 0;
-            }
-            chasePointMechanicRequestedHash = 0;
-            chasePointMechanicModelRequested = false;
-            chasePointMechanicRequestTicks = 0;
-        }
-
-        private string[] SplitCsv(string value)
-        {
-            if (value == null) return new string[0];
-            string[] raw = value.Split(new char[] { ',' });
-            List<string> cleaned = new List<string>();
-            for (int i = 0; i < raw.Length; i++)
-            {
-                string item = raw[i] == null ? "" : raw[i].Trim();
-                if (item.Length > 0) cleaned.Add(item);
-            }
-            return cleaned.ToArray();
-        }
-
-        private bool IsValidPed(Ped ped)
-        {
-            if (ped == null) return false;
-            try { return ped.Exists(); } catch { return false; }
-        }
-
-        private Ped TryCreatePedByName(string modelName, Vector3 position, float heading)
-        {
-            if (modelName == null || modelName.Trim().Length == 0) return null;
-            modelName = modelName.Trim();
-
-            try
-            {
-                MethodInfo[] methods = typeof(World).GetMethods(BindingFlags.Public | BindingFlags.Static);
-                for (int i = 0; i < methods.Length; i++)
-                {
-                    MethodInfo method = methods[i];
-                    if (method.Name != "CreatePed") continue;
-                    ParameterInfo[] parameters = method.GetParameters();
-                    if (parameters.Length < 2) continue;
-
-                    object first = null;
-                    if (parameters[0].ParameterType == typeof(string)) first = modelName;
-                    else if (parameters[0].ParameterType.Name == "Model")
-                    {
-                        try { first = Activator.CreateInstance(parameters[0].ParameterType, new object[] { modelName }); }
-                        catch
-                        {
-                            try
-                            {
-                                int hash = Function.Call<int>("GET_HASH_KEY", modelName);
-                                first = Activator.CreateInstance(parameters[0].ParameterType, new object[] { hash });
-                            }
-                            catch { first = null; }
-                        }
-                    }
-                    else if (parameters[0].ParameterType == typeof(int))
-                    {
-                        try { first = Function.Call<int>("GET_HASH_KEY", modelName); } catch { first = 0; }
-                    }
-                    if (first == null) continue;
-
-                    object[] args = null;
-                    if (parameters.Length == 2 && parameters[1].ParameterType == typeof(Vector3)) args = new object[] { first, position };
-                    else if (parameters.Length == 4 && parameters[1].ParameterType == typeof(float)) args = new object[] { first, position.X, position.Y, position.Z };
-                    else continue;
-
-                    object result = method.Invoke(null, args);
-                    Ped ped = result as Ped;
-                    if (IsValidPed(ped))
-                    {
-                        try { Function.Call("SET_CHAR_COORDINATES", ped, position.X, position.Y, position.Z); } catch { }
-                        try { Function.Call("SET_CHAR_HEADING", ped, heading); } catch { }
-                        return ped;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("World.CreatePed reflection failed for " + modelName + ": " + ex.GetType().Name + ".");
-            }
-            return null;
-        }
-
-        private Vehicle TryCreateVehicleByName(string modelName, Vector3 position, float heading)
-        {
-            if (modelName == null || modelName.Trim().Length == 0) return null;
-            modelName = modelName.Trim().ToLowerInvariant();
-
-            try
-            {
-                MethodInfo[] methods = typeof(World).GetMethods(BindingFlags.Public | BindingFlags.Static);
-                for (int i = 0; i < methods.Length; i++)
-                {
-                    MethodInfo method = methods[i];
-                    if (method.Name != "CreateVehicle") continue;
-                    ParameterInfo[] parameters = method.GetParameters();
-                    if (parameters.Length < 2) continue;
-
-                    object first = null;
-                    if (parameters[0].ParameterType == typeof(string)) first = modelName;
-                    else if (parameters[0].ParameterType.Name == "Model")
-                    {
-                        try { first = Activator.CreateInstance(parameters[0].ParameterType, new object[] { modelName }); }
-                        catch
-                        {
-                            try
-                            {
-                                int hash = Function.Call<int>("GET_HASH_KEY", modelName);
-                                first = Activator.CreateInstance(parameters[0].ParameterType, new object[] { hash });
-                            }
-                            catch { first = null; }
-                        }
-                    }
-                    else if (parameters[0].ParameterType == typeof(int))
-                    {
-                        try { first = Function.Call<int>("GET_HASH_KEY", modelName); } catch { first = 0; }
-                    }
-                    if (first == null) continue;
-
-                    object[] args = null;
-                    if (parameters.Length == 2 && parameters[1].ParameterType == typeof(Vector3)) args = new object[] { first, position };
-                    else if (parameters.Length == 4 && parameters[1].ParameterType == typeof(float)) args = new object[] { first, position.X, position.Y, position.Z };
-                    else continue;
-
-                    object result = method.Invoke(null, args);
-                    Vehicle v = result as Vehicle;
-                    if (IsValidVehicle(v))
-                    {
-                        try { Function.Call("SET_CAR_COORDINATES", v, position.X, position.Y, position.Z); } catch { }
-                        try { Function.Call("SET_CAR_HEADING", v, heading); } catch { }
-                        return v;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("World.CreateVehicle reflection failed for repair scene " + modelName + ": " + ex.GetType().Name + ".");
-            }
-            return null;
-        }
-
-        private void UpdateRepairCarBonnet()
-        {
-            if (!chasePointRepairCarOpenBonnet) return;
-            if (!IsValidVehicle(chasePointRepairCar)) return;
-            if (chasePointRepairCarBonnetRetryTicks <= 0) return;
-            chasePointRepairCarBonnetRetryTicks--;
-
-
-            TryOpenRepairCarDoor(chasePointRepairCarBonnetDoorIndex);
-        }
-
-        private void TryOpenRepairCarDoor(int doorIndex)
-        {
-            if (!IsValidVehicle(chasePointRepairCar)) return;
-
-
-            if (chasePointRepairCarUseControlDoor)
-            {
-                try { Function.Call("CONTROL_CAR_DOOR", chasePointRepairCar, doorIndex, 1, chasePointRepairCarBonnetOpenAngle); } catch { }
-                try { Function.Call("CONTROL_CAR_DOOR", chasePointRepairCar, (uint)doorIndex, (uint)1, chasePointRepairCarBonnetOpenAngle); } catch { }
-            }
-            try { Function.Call("SET_CAR_DOOR_OPEN", chasePointRepairCar, doorIndex, false, false); } catch { }
-            try { Function.Call("SET_CAR_DOOR_OPEN", chasePointRepairCar, doorIndex); } catch { }
-            try { Function.Call("SET_VEHICLE_DOOR_OPEN", chasePointRepairCar, doorIndex, false, false); } catch { }
-            if (chasePointRepairCarUseAggressiveOpenDoor)
-            {
-                try { Function.Call("OPEN_CAR_DOOR", chasePointRepairCar, doorIndex); } catch { }
-            }
-        }
-
-        private void ConfigureRepairSceneCar(Vehicle v)
-        {
-            if (!IsValidVehicle(v)) return;
-            try { Function.Call("SET_CAR_AS_MISSION_CAR", v); } catch { }
-            try { Function.Call("SET_CAR_COORDINATES", v, chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ); } catch { }
-            try { Function.Call("SET_CAR_HEADING", v, chasePointRepairCarHeading); } catch { }
-            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
-            try { Function.Call("SET_CAR_ON_GROUND_PROPERLY", v); } catch { }
-            try { v.Health = chasePointRepairCarHealth; } catch { }
-            try { v.EngineHealth = chasePointRepairCarEngineHealth; } catch { }
-            try { v.PetrolTankHealth = 1000; } catch { }
-            try { Function.Call("SET_ENGINE_HEALTH", v, chasePointRepairCarEngineHealth); } catch { }
-            try { Function.Call("SET_CAR_ENGINE_ON", v, false, true); } catch { }
-            try { Function.Call("LOCK_CAR_DOORS", v, 2); } catch { }
-            if (chasePointRepairCarOpenBonnet)
-            {
-                chasePointRepairCarBonnetRetryTicks = Math.Max(30, chasePointRepairCarBonnetRetryMaxTicks);
-                UpdateRepairCarBonnet();
-            }
-            if (chasePointRepairCarFreeze)
-            {
-                try { Function.Call("FREEZE_CAR_POSITION", v, true); } catch { }
-            }
-        }
-
-        private void ConfigureMechanicPed(Ped ped)
-        {
-            if (!IsValidPed(ped)) return;
-            try { Function.Call("SET_CHAR_AS_MISSION_CHAR", ped); } catch { }
-            Vector3 spawn = GetChasePointMechanicSpawnPosition();
-            try { Function.Call("SET_CHAR_COORDINATES", ped, spawn.X, spawn.Y, spawn.Z); } catch { }
-            try { Function.Call("SET_CHAR_HEADING", ped, GetChasePointMechanicHeading()); } catch { }
-            try { Function.Call("SET_BLOCKING_OF_NON_TEMPORARY_EVENTS", ped, true); } catch { }
-            try { Function.Call("SET_CHAR_NEVER_TARGETTED", ped, true); } catch { }
-            try { Function.Call("SET_CHAR_PROOFS", ped, true, true, true, true, true); } catch { }
-            try { Function.Call("FREEZE_CHAR_POSITION", ped, false); } catch { }
-            chasePointMechanicCycleState = 0;
-            chasePointMechanicCycleTicks = Math.Max(30, chasePointMechanicWorkTicks);
-            chasePointMechanicCycleTaskIssued = false;
-            StartMechanicWorkTask(ped);
         }
 
         private bool IsMissionActiveSafe()
@@ -4225,7 +3520,6 @@ namespace AutoWorkshopCE
                 }
             }
 
-
             if (rawMissionActive)
             {
                 missionPositiveRefreshes++;
@@ -4241,228 +3535,6 @@ namespace AutoWorkshopCE
 
             return cachedMissionActive;
         }
-
-
-        private void CleanupChasePointDecoration(string reason)
-        {
-            if (IsValidPed(chasePointMechanicPed)) DeletePedSafe(chasePointMechanicPed, "Chase Point mechanic " + reason);
-            chasePointMechanicPed = null;
-            for (int i = 0; i < chasePointExtraStaffPeds.Count; i++)
-            {
-                if (IsValidPed(chasePointExtraStaffPeds[i])) DeletePedSafe(chasePointExtraStaffPeds[i], "Chase Point staff " + reason);
-            }
-            chasePointExtraStaffPeds.Clear();
-            if (IsValidVehicle(chasePointRepairCar)) DeleteVehicleSafe(chasePointRepairCar, "Chase Point repair car " + reason);
-            chasePointRepairCar = null;
-            chasePointMechanicCycleState = 0;
-            chasePointMechanicCycleTicks = 0;
-            chasePointMechanicCycleTaskIssued = false;
-        }
-
-        private void DeletePedSafe(Ped ped, string purpose)
-        {
-            if (!IsValidPed(ped)) return;
-            try { Function.Call("DELETE_CHAR", ped); } catch { }
-            try
-            {
-                MethodInfo m = ped.GetType().GetMethod("Delete", new Type[0]);
-                if (m != null) m.Invoke(ped, null);
-            }
-            catch { }
-            if (logToFile && !String.IsNullOrEmpty(purpose)) Log("Deleted " + purpose + ".");
-        }
-
-        private void DeleteVehicleSafe(Vehicle v, string purpose)
-        {
-            if (!IsValidVehicle(v)) return;
-            try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
-            try { Function.Call("DELETE_CAR", v); } catch { }
-            try
-            {
-                MethodInfo m = v.GetType().GetMethod("Delete", new Type[0]);
-                if (m != null) m.Invoke(v, null);
-            }
-            catch { }
-            if (logToFile && !String.IsNullOrEmpty(purpose)) Log("Deleted " + purpose + ".");
-        }
-
-        private void StartMechanicWorkTask(Ped ped)
-        {
-            if (!IsValidPed(ped)) return;
-            Vector3 pos = GetChasePointMechanicSpawnPosition();
-            try { Function.Call("SET_CHAR_COORDINATES", ped, pos.X, pos.Y, pos.Z); } catch { }
-            try { Function.Call("SET_CHAR_HEADING", ped, GetChasePointMechanicHeading()); } catch { }
-            try { Function.Call("TASK_TURN_CHAR_TO_FACE_COORD", ped, chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ); } catch { }
-            try { Function.Call("TASK_LOOK_AT_COORD", ped, chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ + 0.4f, -1, 0); } catch { }
-            if (chasePointMechanicUseScenario && !String.IsNullOrEmpty(chasePointMechanicScenario))
-            {
-                try { Function.Call("TASK_START_SCENARIO_IN_PLACE", ped, chasePointMechanicScenario, 0, true); } catch { }
-            }
-            else
-            {
-                try { Function.Call("TASK_STAND_STILL", ped, -1); } catch { }
-            }
-            chasePointMechanicCycleTaskIssued = true;
-        }
-
-        private void StartMechanicWalkToGarage(Ped ped)
-        {
-            if (!IsValidPed(ped)) return;
-            try { Function.Call("CLEAR_CHAR_TASKS", ped); } catch { }
-            try { Function.Call("TASK_GO_STRAIGHT_TO_COORD", ped, chasePointMechanicGarageX, chasePointMechanicGarageY, chasePointMechanicGarageZ, 1.0f, Math.Max(1000, chasePointMechanicWalkTicks * 16)); } catch { }
-            try { Function.Call("TASK_FOLLOW_NAV_MESH_TO_COORD", ped, chasePointMechanicGarageX, chasePointMechanicGarageY, chasePointMechanicGarageZ, 1.0f, Math.Max(1000, chasePointMechanicWalkTicks * 16), 0.25f); } catch { }
-            chasePointMechanicCycleTaskIssued = true;
-        }
-
-        private void StartMechanicReturnToCar(Ped ped)
-        {
-            if (!IsValidPed(ped)) return;
-            Vector3 pos = GetChasePointMechanicSpawnPosition();
-            try { Function.Call("CLEAR_CHAR_TASKS", ped); } catch { }
-            try { Function.Call("TASK_GO_STRAIGHT_TO_COORD", ped, pos.X, pos.Y, pos.Z, 1.0f, Math.Max(1000, chasePointMechanicWalkTicks * 16)); } catch { }
-            try { Function.Call("TASK_FOLLOW_NAV_MESH_TO_COORD", ped, pos.X, pos.Y, pos.Z, 1.0f, Math.Max(1000, chasePointMechanicWalkTicks * 16), 0.25f); } catch { }
-            chasePointMechanicCycleTaskIssued = true;
-        }
-
-        private void UpdateChasePointMechanicWorkCycle()
-        {
-            if (!chasePointMechanicUseWorkCycle || !IsValidPed(chasePointMechanicPed)) return;
-            if (serviceOpen || scriptGarageTransitioning) return;
-
-            if (chasePointMechanicCycleTicks > 0)
-            {
-                chasePointMechanicCycleTicks--;
-                if (!chasePointMechanicCycleTaskIssued)
-                {
-                    if (chasePointMechanicCycleState == 0) StartMechanicWorkTask(chasePointMechanicPed);
-                    else if (chasePointMechanicCycleState == 1) StartMechanicWalkToGarage(chasePointMechanicPed);
-                    else if (chasePointMechanicCycleState == 3) StartMechanicReturnToCar(chasePointMechanicPed);
-                }
-                return;
-            }
-
-            chasePointMechanicCycleTaskIssued = false;
-            if (chasePointMechanicCycleState == 0)
-            {
-                chasePointMechanicCycleState = 1;
-                chasePointMechanicCycleTicks = Math.Max(30, chasePointMechanicWalkTicks);
-                StartMechanicWalkToGarage(chasePointMechanicPed);
-            }
-            else if (chasePointMechanicCycleState == 1)
-            {
-                chasePointMechanicCycleState = 2;
-                chasePointMechanicCycleTicks = Math.Max(30, chasePointMechanicGarageTicks);
-                try { Function.Call("CLEAR_CHAR_TASKS", chasePointMechanicPed); } catch { }
-                try { Function.Call("SET_CHAR_COORDINATES", chasePointMechanicPed, chasePointMechanicGarageX, chasePointMechanicGarageY, chasePointMechanicGarageZ); } catch { }
-                try { Function.Call("SET_CHAR_HEADING", chasePointMechanicPed, chasePointMechanicGarageHeading); } catch { }
-                try { Function.Call("TASK_STAND_STILL", chasePointMechanicPed, -1); } catch { }
-            }
-            else if (chasePointMechanicCycleState == 2)
-            {
-                chasePointMechanicCycleState = 3;
-                chasePointMechanicCycleTicks = Math.Max(30, chasePointMechanicWalkTicks);
-                StartMechanicReturnToCar(chasePointMechanicPed);
-            }
-            else
-            {
-                chasePointMechanicCycleState = 0;
-                chasePointMechanicCycleTicks = Math.Max(30, chasePointMechanicWorkTicks);
-                StartMechanicWorkTask(chasePointMechanicPed);
-            }
-        }
-
-        private void UpdateChasePointExtraStaffPeds()
-        {
-            if (!enableChasePointExtraStaff || !enableChasePointWorkshop) return;
-            if (serviceOpen || scriptGarageTransitioning) return;
-            if (chasePointExtraStaffRetryTicks > 0) { chasePointExtraStaffRetryTicks--; return; }
-
-            StaffSpawn[] spawns = ParseStaffSpawns(chasePointExtraStaffSpawns);
-            if (spawns.Length == 0) return;
-            string[] models = SplitCsv(chasePointExtraStaffModels);
-            if (models.Length == 0) return;
-
-            try
-            {
-                if (Player.Character == null || !Player.Character.Exists()) return;
-                Vector3 p = Player.Character.Position;
-                float max = Math.Max(20.0f, chasePointExtraStaffSpawnDistance);
-                float dx = p.X - chasePointRepairCarX;
-                float dy = p.Y - chasePointRepairCarY;
-                float dz = p.Z - chasePointRepairCarZ;
-                if ((dx * dx + dy * dy) > (max * max) || Math.Abs(dz) > 35.0f) return;
-            }
-            catch { return; }
-
-            while (chasePointExtraStaffPeds.Count < spawns.Length) chasePointExtraStaffPeds.Add(null);
-            bool requestedAny = false;
-            for (int i = 0; i < spawns.Length; i++)
-            {
-                if (IsValidPed(chasePointExtraStaffPeds[i])) continue;
-                string model = models[i % models.Length];
-                if (!PreparePedModelForStaff(model)) { requestedAny = true; continue; }
-                StaffSpawn ss = spawns[i];
-                Vector3 pos = GetOffsetPosition(chasePointRepairCarX, chasePointRepairCarY, chasePointRepairCarZ, chasePointRepairCarHeading, ss.OffsetX, ss.OffsetY, ss.OffsetZ);
-                Ped ped = TryCreatePedByName(model, pos, ss.Heading);
-                if (IsValidPed(ped))
-                {
-                    ConfigureExtraStaffPed(ped, pos, ss.Heading);
-                    chasePointExtraStaffPeds[i] = ped;
-                    Log("Chase Point extra staff NPC created. Model=" + model + ", Slot=" + i.ToString() + ".");
-                }
-            }
-            if (requestedAny) chasePointExtraStaffRetryTicks = 30;
-        }
-
-        private bool PreparePedModelForStaff(string modelName)
-        {
-            int hash = 0;
-            try { hash = Function.Call<int>("GET_HASH_KEY", modelName); } catch { hash = 0; }
-            if (hash == 0) return false;
-            try { if (Function.Call<bool>("HAS_MODEL_LOADED", hash)) return true; } catch { }
-            try { Function.Call("REQUEST_MODEL", hash); } catch { }
-            return false;
-        }
-
-        private void ConfigureExtraStaffPed(Ped ped, Vector3 pos, float heading)
-        {
-            if (!IsValidPed(ped)) return;
-            try { Function.Call("SET_CHAR_AS_MISSION_CHAR", ped); } catch { }
-            try { Function.Call("SET_CHAR_COORDINATES", ped, pos.X, pos.Y, pos.Z); } catch { }
-            try { Function.Call("SET_CHAR_HEADING", ped, heading); } catch { }
-            try { Function.Call("SET_BLOCKING_OF_NON_TEMPORARY_EVENTS", ped, true); } catch { }
-            try { Function.Call("SET_CHAR_NEVER_TARGETTED", ped, true); } catch { }
-            try { Function.Call("SET_CHAR_PROOFS", ped, true, true, true, true, true); } catch { }
-            try { Function.Call("TASK_STAND_STILL", ped, -1); } catch { }
-        }
-
-        private class StaffSpawn
-        {
-            public float OffsetX;
-            public float OffsetY;
-            public float OffsetZ;
-            public float Heading;
-        }
-
-        private StaffSpawn[] ParseStaffSpawns(string value)
-        {
-            List<StaffSpawn> result = new List<StaffSpawn>();
-            if (value == null) return result.ToArray();
-            string[] rows = value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < rows.Length; i++)
-            {
-                string[] p = rows[i].Split(new char[] { ',' });
-                if (p.Length < 4) continue;
-                StaffSpawn ss = new StaffSpawn();
-                ss.OffsetX = ReadFloat(p[0], 0.0f);
-                ss.OffsetY = ReadFloat(p[1], 0.0f);
-                ss.OffsetZ = ReadFloat(p[2], -0.35f);
-                ss.Heading = ReadFloat(p[3], 0.0f);
-                result.Add(ss);
-            }
-            return result.ToArray();
-        }
-
 
         private void EnsureWorkshopTriggers()
         {
@@ -4498,7 +3570,6 @@ namespace AutoWorkshopCE
                 Log("No WorkshopTrigger entries available. Vanilla fallback is " + allowVanillaGarageFallbackInScriptGarage.ToString() + ". Press F7 in a vehicle to dump coordinates for configuration.");
             }
         }
-
 
         private void NormaliseMenuKeys()
         {
@@ -4537,7 +3608,6 @@ namespace AutoWorkshopCE
 
         private void ApplyIniValue(string section, string key, string value)
         {
-
 
             string sec = section == null ? "" : section.Trim().ToLowerInvariant();
             string k = key == null ? "" : key.Trim().ToLowerInvariant();
@@ -4627,10 +3697,8 @@ namespace AutoWorkshopCE
     }
 }
 
-
 namespace LibertyVehicleServicesCE
 {
-
 
     public class LibertyVehicleServicesCEScript : Script
     {
@@ -4649,8 +3717,37 @@ namespace LibertyVehicleServicesCE
         [DllImport("plugins\\000_LVSCE_LCP_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
         private static extern int LVSCE_LCP_GetBridgeVersion();
 
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_Install();
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_GetStatus();
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_GetBridgeVersion();
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_SubmitFrame(int mode, int vehicleHandle, float speedMps, float fuelPercent, int lowFuel, float rpm, int gear, float heading, float altitude, int engineOn, int checkEngineOn, int lightsOn, int highBeamOn, int leftIndicatorOn, int rightIndicatorOn, float opacity);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_SubmitTelemetry(int vehicleAddress, int vehicleHandle, float speedMps, float signedSpeedMps, int gear, int mode);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_SetRuntimeOptions(int cutsceneGuard, int layoutTunerEnabled);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_SetLayout(int mode, int part, float offsetX, float offsetY, float scale);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_GetLayout(int mode, int part, out float offsetX, out float offsetY, out float scale);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_GetLayoutDefault(int mode, int part, out float offsetX, out float offsetY, out float scale);
+
+        [DllImport("plugins\\000_LVSCE_Dashboard_Bridge.asi", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int LVSCE_DASH_ConsumeLayoutSaveRequest();
+
         private const int CustomPlateAbsoluteMaxLength = 8;
-        private const int WorkshopServiceBlipSpriteForNames = 30;
         private const float StevieRecoveryX = 733.774f;
         private const float StevieRecoveryY = 1402.436f;
         private const float StevieRecoveryZ = 13.707f;
@@ -4671,7 +3768,7 @@ namespace LibertyVehicleServicesCE
 
         private bool showDebugMessages = false;
         private bool logToFile = true;
-        private bool logPositionHotkeyEnabled = true;
+
         private bool blockPlayerControlDuringMenu = true;
         private bool freezePreviewVehicles = true;
         private bool markOwnedVehiclesAsMissionCars = true;
@@ -4696,9 +3793,6 @@ namespace LibertyVehicleServicesCE
         private bool cachedMissionActive = false;
         private int missionCheckCooldownTicks = 0;
         private int missionCheckIntervalTicks = 90;
-        private int missionPositiveRefreshes = 0;
-        private int missionNegativeRefreshes = 0;
-        private int missionRequiredPositiveRefreshes = 2;
         private bool missionFlagUnavailableLogged = false;
         private bool missionPropertyFailureLogged = false;
         private bool missionStateSourceLogged = false;
@@ -4718,7 +3812,6 @@ namespace LibertyVehicleServicesCE
         private float fuelStationBlipScale = 0.75f;
         private const float MetroStationBlipScale = 1.0f;
 
-
         private const float MetroEntranceActivationRadius = 260.0f;
         private const int MetroEntranceMaxActiveBlips = 12;
         private const float MetroEntranceBlipScale = 0.5f;
@@ -4728,7 +3821,6 @@ namespace LibertyVehicleServicesCE
         private bool pauseWorldGuardWasActive = false;
         private int blipDiagnosticCooldownTicks = 0;
         private bool refreshOwnedMissionFlagEachTick = false;
-        private bool forceDealerSaleSlotVehicles = true;
         private bool randomiseDealerSaleSlotModels = true;
         private const float dealerSaleSlotClearRadius = 2.25f;
         private const float dealerSaleSlotActivationRadius = 90.0f;
@@ -4744,6 +3836,7 @@ namespace LibertyVehicleServicesCE
         private int dealerDeliveryReservationTicks = 900;
         private float dealerVehicleInteractRadius = 3.25f;
         private bool safelyGroundCreatedVehicles = true;
+        private int vehicleInAirProperNativeState = 0;
         private int dealerForcedSlotIndex = -1;
         private int missionGuardNoticeCooldownTicks = 0;
         private float dealerPriceVariancePercent = 5.0f;
@@ -4792,6 +3885,7 @@ namespace LibertyVehicleServicesCE
         private string messageText = "";
         private int tickCounter = 0;
         private int ownedVehicleRestoreCooldownTicks = 0;
+        private List<OwnedVehicleGroundSettleJob> ownedVehicleGroundSettleJobs = new List<OwnedVehicleGroundSettleJob>();
         private bool attemptedInitialSpawn = false;
         private int nextOwnedId = 1;
         private int previewCooldown = 0;
@@ -4802,7 +3896,6 @@ namespace LibertyVehicleServicesCE
         private bool worldNotReadyLogWritten = false;
 
         private float registrationStreetMultiplier = 0.30f;
-        private float registrationDealerMultiplier = 0.00f;
         private float insuranceDealerMultiplier = 0.12f;
         private float insuranceStreetMultiplier = 0.20f;
         private float recoveryInsuredFeeMultiplier = 0.00f;
@@ -4811,7 +3904,6 @@ namespace LibertyVehicleServicesCE
         private int customPlatePrice = 500;
         private int stevieDeliveryFee = 300;
         private int customPlateMaxLength = 8;
-
 
         private float fuelPricePerGallon = 3.30f;
         private float fuelConsumptionMultiplier = 1.0f;
@@ -4828,6 +3920,54 @@ namespace LibertyVehicleServicesCE
         private bool fuelTestDisplayEnabled = false;
         private bool fuelHideHudDuringCutscenes = true;
         private bool fuelAffectsUnknownVehicles = true;
+        private bool dashboardEnabled = false;
+        private bool dashboardLayoutTunerEnabled = false;
+        private bool dashboardBridgeChecked = false;
+        private bool dashboardBridgeAvailable = false;
+        private bool dashboardBridgeMissingLogged = false;
+        private bool dashboardBridgeStatusLogged = false;
+        private const int DashboardBridgeRequiredVersion = 111;
+        private const float DashboardLowFuelWarningPercent = 10.0f;
+        private const float DashboardCheckEngineOnThreshold = 650.0f;
+        private const float DashboardCheckEngineOffThreshold = 700.0f;
+        private int dashboardCheckEngineVehicleHandle = 0;
+        private bool dashboardCheckEngineLatched = false;
+        private const int DashboardLayoutPartAll = 0;
+        private const int DashboardLayoutPartSpeedometer = 1;
+        private const int DashboardLayoutPartTachometer = 2;
+        private const int DashboardLayoutPartFuel = 3;
+        private Dictionary<string, float[]> dashboardLayoutOverrides = new Dictionary<string, float[]>();
+        private bool dashboardLayoutOverridesApplied = false;
+        private const int DashboardVehicleTransientHoldMs = 900;
+        private int dashboardCachedMode = 0;
+        private int dashboardCachedVehicleHandle = 0;
+        private float dashboardCachedSpeedMps = 0.0f;
+        private float dashboardCachedFuelPercent = -1.0f;
+        private int dashboardCachedLowFuel = 0;
+        private float dashboardCachedRpm = -1.0f;
+        private int dashboardCachedGear = -99;
+        private float dashboardCachedHeading = 0.0f;
+        private float dashboardCachedAltitude = 0.0f;
+        private int dashboardCachedEngineOn = -1;
+        private int dashboardCachedCheckEngineOn = -1;
+        private int dashboardCachedLightsOn = -1;
+        private int dashboardCachedHighBeamOn = -1;
+        private int dashboardCachedLeftIndicatorOn = -1;
+        private int dashboardCachedRightIndicatorOn = -1;
+        private float dashboardCachedOpacity = 1.0f;
+        private int dashboardCachedUntilMs = 0;
+        private int dashboardGearLastHandle = 0;
+        private int dashboardGearLastTick = 0;
+        private float dashboardGearLastX = 0.0f;
+        private float dashboardGearLastY = 0.0f;
+        private int dashboardReverseLatchUntilMs = 0;
+        private int dashboardReverseLatchHandle = 0;
+        private int dashboardUiGuardLastCutsceneState = -1;
+        private int dashboardUiGuardLastLayoutTunerState = -1;
+        private Dictionary<string, bool> dashboardNativeBoolUnavailable = new Dictionary<string, bool>();
+        private Dictionary<string, float> ownedSpawnZLiftByModel = new Dictionary<string, float>();
+        private Dictionary<OwnedVehicleRecord, int> ownedSkipPositionCaptureUntilTick = new Dictionary<OwnedVehicleRecord, int>();
+        private bool nativeSetCarHandbrakeUnavailable = false;
         private bool loadAddonVehicleDataFiles = true;
         private bool useNativeVehicleDefinitionFallback = false;
         private const int FuelUpdateIntervalMs = 500;
@@ -4854,7 +3994,6 @@ namespace LibertyVehicleServicesCE
         private List<MetroStation> metroStations = new List<MetroStation>();
         private List<MetroEntrance> metroEntrances = new List<MetroEntrance>();
         private float dealerDefaultMarkup = 1.00f;
-        private float extraPurchaseFraction = 0.025f;
         private int dealerExtraBasePrice = 75;
         private float dealerExtraSwankness0Multiplier = 1.00f;
         private float dealerExtraSwankness1Multiplier = 1.00f;
@@ -4885,7 +4024,6 @@ namespace LibertyVehicleServicesCE
         private const int pauseMenuReleaseDelayTicks = 8;
         private bool pauseMenuDisabledByLvsMenu = false;
         private bool pauseMenuDisableUnavailableLogged = false;
-        private Keys keyLogPosition = Keys.F7;
 
         private string iniPath = "scripts\\LibertyVehicleServicesCE.ini";
         private string ownedPath = "scripts\\LibertyVehicleServicesCE.owned.ini";
@@ -4894,6 +4032,7 @@ namespace LibertyVehicleServicesCE
         private Dictionary<int, VehicleDefinition> vehicleByHash = new Dictionary<int, VehicleDefinition>();
         private Dictionary<string, VehicleDefinition> vehicleByModel = new Dictionary<string, VehicleDefinition>();
         private Dictionary<string, string> vehicleModelAliases = new Dictionary<string, string>();
+        private Dictionary<string, string> builtInVehicleDisplayNames = new Dictionary<string, string>();
         private Dictionary<string, int> monetaryByHandling = new Dictionary<string, int>();
         private Dictionary<string, int> priceOverrides = new Dictionary<string, int>();
         private Dictionary<string, int> swanknessOverrides = new Dictionary<string, int>();
@@ -5160,6 +4299,16 @@ namespace LibertyVehicleServicesCE
             public float FuelGallons;
             public float FuelCapacityGallons;
             public int DirtCaptureNextMs;
+            public int GroundWatchCooldownTick;
+        }
+
+        private class OwnedVehicleGroundSettleJob
+        {
+            public OwnedVehicleRecord Record;
+            public Vehicle Vehicle;
+            public int Attempts;
+            public int NextTick;
+            public string Reason;
         }
 
         private class FuelVehicleState
@@ -5222,6 +4371,7 @@ namespace LibertyVehicleServicesCE
             LoadIni();
             ResetLogFile();
             Log("Bootstrap started. Native/world-bound initialisation is deferred until the game world is ready.");
+            Log("Dashboard config: EnableDashboard=" + dashboardEnabled.ToString() + ", EnableLayoutTuner=" + dashboardLayoutTunerEnabled.ToString() + ".");
             NormaliseMenuKeys();
             LoadVehicleDatabase();
             LoadLcpPlateDefinitions();
@@ -5234,7 +4384,7 @@ namespace LibertyVehicleServicesCE
             this.Tick += new EventHandler(OnTick);
             this.KeyDown += new GTA.KeyEventHandler(OnKeyDown);
             Notify("Liberty Vehicle Services CE loaded");
-            Log("Core loaded. Episode detection, story-progress checks, LCP bridge detection, workshop initialisation, blip creation and owned-car spawning will start after the save has fully entered the world. VehicleDefs=" + vehicleByModel.Count.ToString() + ", Dealers=" + dealers.Count.ToString() + ", RegistrationPoints=" + registrationPoints.Count.ToString() + ", Owned=" + ownedVehicles.Count.ToString() + ". Modules: dealers=" + dealersEnabled.ToString() + ", registration=" + streetRegistrationEnabled.ToString() + ", ownership=" + ownershipEnabled.ToString() + ", workshop=" + workshopEnabled.ToString() + ", workshopExternal=" + workshopModuleExternal.ToString() + ", fuel=" + fuelModuleEnabled.ToString() + ", metro=" + metroStationsEnabled.ToString() + ".");
+            Log("Core loaded. Episode detection, story-progress checks, LCP bridge detection, workshop initialisation, blip creation and owned-car spawning will start after the save has fully entered the world. VehicleDefs=" + vehicleByModel.Count.ToString() + ", Dealers=" + dealers.Count.ToString() + ", RegistrationPoints=" + registrationPoints.Count.ToString() + ", Owned=" + ownedVehicles.Count.ToString() + ". Modules: dealers=" + dealersEnabled.ToString() + ", registration=" + streetRegistrationEnabled.ToString() + ", ownership=" + ownershipEnabled.ToString() + ", workshop=" + workshopEnabled.ToString() + ", workshopExternal=" + workshopModuleExternal.ToString() + ", fuel=" + fuelModuleEnabled.ToString() + ", metro=" + metroStationsEnabled.ToString() + ", dashboard=" + dashboardEnabled.ToString() + ".");
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -5252,6 +4402,7 @@ namespace LibertyVehicleServicesCE
                 if (!IsGameWorldReadyForLvs())
                 {
                     worldReadyStableTicks = 0;
+                    HideDashboardBridgeIfAvailable();
                     if (!worldNotReadyLogWritten)
                     {
                         worldNotReadyLogWritten = true;
@@ -5268,9 +4419,9 @@ namespace LibertyVehicleServicesCE
                 RefreshCurrentEpisodeKey(false);
                 UpdatePauseMenuGuard(menuOpen || WorkshopMenuOpenSafe());
 
-
                 if (IsPauseMenuActiveSafe())
                 {
+                    HideDashboardBridgeIfAvailable();
                     if (!pauseWorldGuardWasActive)
                     {
                         pauseWorldGuardWasActive = true;
@@ -5307,16 +4458,17 @@ namespace LibertyVehicleServicesCE
                     if (showDebugMessages) Log("MISSION_GUARD released: LVS service interactions resumed.");
                 }
 
-
                 if (!missionGuardActive)
                 {
                     if (menuOpen)
                     {
+                        HideDashboardBridgeIfAvailable();
                         DrawMenu();
                         return;
                     }
                     if (WorkshopMenuOpenSafe())
                     {
+                        HideDashboardBridgeIfAvailable();
                         TickWorkshopModuleSafe("menu");
                         return;
                     }
@@ -5325,6 +4477,8 @@ namespace LibertyVehicleServicesCE
                 TrackLastPlayerVehicle();
 
                 if (fuelModuleEnabled && IsPlayerValid()) UpdateFuelSystem();
+
+                if (dashboardEnabled) UpdateDashboardBridge();
 
                 if (ownershipEnabled)
                 {
@@ -5340,6 +4494,7 @@ namespace LibertyVehicleServicesCE
                             ownedSpawnDelayTicks--;
                         }
                     }
+                    UpdateOwnedVehicleGroundSettles();
                     UpdateOwnedVehicles();
                     UpdateOwnedVehiclePlateApplications();
                     if (enableOwnedVehicleBlips) UpdateOwnedVehicleBlips();
@@ -5470,24 +4625,11 @@ namespace LibertyVehicleServicesCE
             catch (Exception wex) { Log("Workshop module tick error (" + context + "): " + wex.GetType().Name + "."); }
         }
 
-        private void CloseWorkshopMenuForMissionGuardSafe()
-        {
-            if (!workshopEnabled || workshopModuleExternal || workshopModule == null) return;
-            try { workshopModule.HostCloseMenuForMissionGuard(); }
-            catch (Exception wex) { Log("Workshop module close error (mission guard): " + wex.GetType().Name + "."); }
-        }
-
         private void OnKeyDown(object sender, GTA.KeyEventArgs e)
         {
             if (!enabled) return;
             try
             {
-                if (logPositionHotkeyEnabled && e.Key == keyLogPosition)
-                {
-                    LogCurrentPositionForConfig();
-                    return;
-                }
-
                 if (workshopEnabled && !workshopModuleExternal && workshopModule != null)
                 {
                     try { workshopModule.HostKeyDown(e); }
@@ -5511,7 +4653,6 @@ namespace LibertyVehicleServicesCE
                         DealerDefinition vehicleDealer;
                         int saleSlotIndex;
                         Vehicle saleVehicle;
-
 
                         if (TryGetNearestDealerVehicleCandidate(out vehicleDealer, out saleSlotIndex, out saleVehicle))
                         {
@@ -5796,10 +4937,8 @@ namespace LibertyVehicleServicesCE
                 }
             }
 
-
             return cachedMissionActive;
         }
-
 
         private bool IsServiceInteractionRelevantForMissionCheck()
         {
@@ -5808,7 +4947,6 @@ namespace LibertyVehicleServicesCE
             {
                 if (IsPlayerOnFoot())
                 {
-
 
                     if (GetNearestDealer() != null) return true;
                     if (GetNearestRegistrationPoint() != null) return true;
@@ -6940,7 +6078,6 @@ namespace LibertyVehicleServicesCE
                 if (showroomDelivery && IsValidVehicle(dealerPreviewVehicle))
                 {
 
-
                     MarkVehicleAsMission(dealerPreviewVehicle);
                     DeleteVehicleSafe(dealerPreviewVehicle, "purchased showroom display car");
                 }
@@ -7661,7 +6798,6 @@ namespace LibertyVehicleServicesCE
                 if (dealer.AdoptNativeVehicles)
                 {
 
-
                     if (lockedThisVisit) continue;
 
                     int cd = 0;
@@ -7679,7 +6815,6 @@ namespace LibertyVehicleServicesCE
                     if (adopted > 0)
                     {
 
-
                         if (!dealer.ForceSaleSlotVehicles || attempts >= 2) dealerAdoptionLockedThisVisit[key] = true;
                     }
                     else if (dealer.FallbackSpawnWhenNoNativeVehicles)
@@ -7689,7 +6824,6 @@ namespace LibertyVehicleServicesCE
                     }
                     else if (dealer.ForceSaleSlotVehicles)
                     {
-
 
                         if (attempts >= Math.Max(1, adoptedDealerMaxRetryAttempts))
                         {
@@ -7728,24 +6862,6 @@ namespace LibertyVehicleServicesCE
             float dy = py - dealer.Y;
             float dz = pz - dealer.Z;
             return (dx * dx + dy * dy) <= (maxDist * maxDist) && Math.Abs(dz) <= 45.0f;
-        }
-
-        private bool IsPlayerNearDealerSaleSlots(DealerDefinition dealer)
-        {
-            if (dealer == null || dealer.DisplaySlots == null || dealer.DisplaySlots.Count == 0) return false;
-            float px; float py; float pz;
-            if (!TryGetPlayerPosition(out px, out py, out pz)) return false;
-            float maxDist = Math.Max(30.0f, dealerSaleSlotActivationRadius);
-            float maxDist2 = maxDist * maxDist;
-            for (int i = 0; i < dealer.DisplaySlots.Count; i++)
-            {
-                DealerDisplaySlot slot = dealer.DisplaySlots[i];
-                float dx = px - slot.X;
-                float dy = py - slot.Y;
-                float dz = pz - slot.Z;
-                if ((dx * dx + dy * dy) <= maxDist2 && Math.Abs(dz) <= 35.0f) return true;
-            }
-            return false;
         }
 
         private void EnsureSpawnedDealerSaleSlotVehicles(DealerDefinition dealer)
@@ -7819,7 +6935,6 @@ namespace LibertyVehicleServicesCE
                 Vehicle[] all = result as Vehicle[];
                 if (all == null) return 0;
 
-
                 RemoveAmbientDealerSaleReferences(dealer);
 
                 int adopted = 0;
@@ -7873,7 +6988,6 @@ namespace LibertyVehicleServicesCE
             if (IsVehicleDead(v)) return false;
             if (SafeVehicleSpeed(v) > 0.35f) return false;
 
-
             VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
             if (def == null && !keepUnknownDealerModels) return false;
             if (def != null)
@@ -7882,7 +6996,6 @@ namespace LibertyVehicleServicesCE
                 if (def.IsTaxi) return false;
                 if (def.IsIndustrial) return false;
             }
-
 
             return true;
         }
@@ -7936,29 +7049,6 @@ namespace LibertyVehicleServicesCE
             for (int i = 0; i < keys.Count; i++) RemoveDealerSaleSlotByKey(keys[i], false);
         }
 
-        private void RemoveInvalidDealerSaleReferences(DealerDefinition dealer)
-        {
-            if (dealer == null || dealer.Id == null) return;
-            List<string> keys = new List<string>();
-            foreach (KeyValuePair<string, Vehicle> pair in dealerSlotVehicles)
-            {
-                if (pair.Key == null || !pair.Key.StartsWith(dealer.Id + ":")) continue;
-                Vehicle v = pair.Value;
-                if (!IsValidVehicle(v) || IsVehicleDead(v) || IsVehicleAlreadyOwned(v)) keys.Add(pair.Key);
-                else
-                {
-                    bool isAmbient = false;
-                    dealerSlotAmbient.TryGetValue(pair.Key, out isAmbient);
-                    if (isAmbient)
-                    {
-                        float x; float y; float z;
-                        if (!TryGetVehiclePosition(v, out x, out y, out z) || !IsInsideDealerAdoptionArea(dealer, x, y, z)) keys.Add(pair.Key);
-                    }
-                }
-            }
-            for (int i = 0; i < keys.Count; i++) RemoveDealerSaleSlotByKey(keys[i], false);
-        }
-
         private int CountDealerSaleVehicles(DealerDefinition dealer)
         {
             if (dealer == null || dealer.Id == null) return 0;
@@ -7980,17 +7070,6 @@ namespace LibertyVehicleServicesCE
             try { Function.Call("LOCK_CAR_DOORS", v, 0); } catch { }
             try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
             try { Function.Call("SET_CAR_AS_MISSION_CAR", v); } catch { }
-        }
-
-        private bool IsVehicleParkedAtSlot(Vehicle v, DealerDisplaySlot slot)
-        {
-            if (!IsValidVehicle(v) || slot == null) return false;
-            float x; float y; float z;
-            if (!TryGetVehiclePosition(v, out x, out y, out z)) return false;
-            float dx = x - slot.X;
-            float dy = y - slot.Y;
-            float dz = z - slot.Z;
-            return (dx * dx + dy * dy) <= 1.25f && Math.Abs(dz) <= 1.5f;
         }
 
         private int GetOrCreateDealerSlotColour(string key)
@@ -8053,7 +7132,6 @@ namespace LibertyVehicleServicesCE
         private void DeleteVehicleSafe(Vehicle v, string purpose)
         {
             if (!IsValidVehicle(v)) return;
-
 
             try { v.Delete(); return; } catch { }
             try { Function.Call("DELETE_CAR", v); } catch { }
@@ -8147,7 +7225,6 @@ namespace LibertyVehicleServicesCE
             }
         }
 
-
         private bool IsVehicleInsideHeldDealerSlot(DealerDefinition dealer, Vehicle v)
         {
             if (dealer == null || dealer.Id == null || !IsValidVehicle(v) || dealerHeldEmptySlots.Count == 0) return false;
@@ -8212,39 +7289,6 @@ namespace LibertyVehicleServicesCE
             BuildDealerExtrasFromPreview();
         }
 
-        private void ClearDealerSaleSlotVehicles(bool deleteVehicles, Vehicle keepVehicle)
-        {
-            if (activeDealer == null || activeDealer.Id == null) return;
-            List<string> keys = new List<string>();
-            foreach (KeyValuePair<string, Vehicle> pair in dealerSlotVehicles)
-            {
-                if (pair.Key != null && pair.Key.StartsWith(activeDealer.Id + ":")) keys.Add(pair.Key);
-            }
-            for (int i = 0; i < keys.Count; i++)
-            {
-                string key = keys[i];
-                Vehicle v = dealerSlotVehicles[key];
-                bool keep = IsSameVehicle(v, keepVehicle);
-                bool isAmbient = false;
-                dealerSlotAmbient.TryGetValue(key, out isAmbient);
-                if (IsValidVehicle(v))
-                {
-                    try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
-                    try { Function.Call("LOCK_CAR_DOORS", v, 0); } catch { }
-                    if (deleteVehicles && !keep && !isAmbient)
-                    {
-                        try { v.Delete(); } catch { }
-                        try { Function.Call("DELETE_CAR", v); } catch { }
-                    }
-                }
-                dealerSlotVehicles.Remove(key);
-                dealerSlotModels.Remove(key);
-                dealerSlotAmbient.Remove(key);
-                dealerSlotColours.Remove(key);
-                dealerSlotPriceFactors.Remove(key);
-            }
-        }
-
         private bool IsSameVehicle(Vehicle a, Vehicle b)
         {
             if (!IsValidVehicle(a) || !IsValidVehicle(b)) return false;
@@ -8274,19 +7318,6 @@ namespace LibertyVehicleServicesCE
             if (value < min) return min;
             if (value > max) return max;
             return value;
-        }
-
-
-        private int IndexOfModel(List<string> models, string model)
-        {
-            if (models == null || model == null) return -1;
-            string needle = model.Trim().ToLowerInvariant();
-            for (int i = 0; i < models.Count; i++)
-            {
-                string m = models[i] == null ? "" : models[i].Trim().ToLowerInvariant();
-                if (m == needle) return i;
-            }
-            return -1;
         }
 
         private Vehicle TryCreateVehicleByName(string modelName, Vector3 position, float heading)
@@ -8377,17 +7408,6 @@ namespace LibertyVehicleServicesCE
             try { Function.Call("SET_CAR_HEADING", v, heading); } catch { }
         }
 
-        private void SetVehicleOnGroundProperlyOnce(Vehicle v, float heading)
-        {
-            if (!safelyGroundCreatedVehicles || !IsValidVehicle(v)) return;
-            try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
-            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
-            try { Function.Call("SET_CAR_HEADING", v, heading); } catch { }
-            try { Function.Call("SET_CAR_ON_GROUND_PROPERLY", v); } catch { }
-            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
-            try { Function.Call("SET_CAR_HEADING", v, heading); } catch { }
-        }
-
         private OwnedVehicleRecord RegisterOwnedVehicle(Vehicle v, string modelName, string source, bool registered, bool insured, int purchasePrice, int insurancePrice)
         {
             if (!IsValidVehicle(v)) return null;
@@ -8467,6 +7487,7 @@ namespace LibertyVehicleServicesCE
                     {
                         rec.VehicleRef = handleVehicle;
                         v = handleVehicle;
+                        ScheduleOwnedVehicleGroundSettle(rec, v, "handle reclaim");
                     }
                     else
                     {
@@ -8490,8 +7511,9 @@ namespace LibertyVehicleServicesCE
                         Log("Owned vehicle destroyed: " + rec.Id + " " + rec.ModelName + ".");
                         continue;
                     }
+                    if (EnsureOwnedVehicleGroundedIfFloating(rec, v)) continue;
                     if (markOwnedVehiclesAsMissionCars && refreshOwnedMissionFlagEachTick) MarkVehicleAsMission(v);
-                    if (updateOwnedStateWhileDriving || !IsPlayerVehicle(v)) CaptureVehicleState(v, rec);
+                    if (!IsOwnedVehicleGroundSettlePending(rec) && (updateOwnedStateWhileDriving || !IsPlayerVehicle(v))) CaptureVehicleState(v, rec);
                     continue;
                 }
 
@@ -8506,6 +7528,169 @@ namespace LibertyVehicleServicesCE
 
             if (ownedVehicleRestoreCooldownTicks > 0) ownedVehicleRestoreCooldownTicks--;
             else ownedVehicleRestoreCooldownTicks = OwnedVehicleRestoreIntervalTicks;
+        }
+
+        private void ScheduleOwnedVehicleGroundSettle(OwnedVehicleRecord rec, Vehicle v, string reason)
+        {
+            if (!safelyGroundCreatedVehicles || rec == null || !IsValidVehicle(v)) return;
+            for (int i = 0; i < ownedVehicleGroundSettleJobs.Count; i++)
+            {
+                OwnedVehicleGroundSettleJob existing = ownedVehicleGroundSettleJobs[i];
+                if (existing != null && existing.Record == rec)
+                {
+                    existing.Vehicle = v;
+                    existing.Attempts = 0;
+                    existing.NextTick = tickCounter + 6;
+                    existing.Reason = reason;
+                    return;
+                }
+            }
+            OwnedVehicleGroundSettleJob job = new OwnedVehicleGroundSettleJob();
+            job.Record = rec;
+            job.Vehicle = v;
+            job.Attempts = 0;
+            job.NextTick = tickCounter + 6;
+            job.Reason = reason;
+            ownedVehicleGroundSettleJobs.Add(job);
+        }
+
+        private bool IsOwnedVehicleGroundSettlePending(OwnedVehicleRecord rec)
+        {
+            if (rec == null) return false;
+            for (int i = 0; i < ownedVehicleGroundSettleJobs.Count; i++)
+            {
+                OwnedVehicleGroundSettleJob job = ownedVehicleGroundSettleJobs[i];
+                if (job != null && job.Record == rec) return true;
+            }
+            return false;
+        }
+
+        private bool IsOwnedSpawnLikeSettleReason(string reason)
+        {
+            if (reason == null) return false;
+            return reason == "spawn" || reason == "adoption" || reason == "floating watch" || reason == "handle reclaim";
+        }
+
+        private void UpdateOwnedVehicleGroundSettles()
+        {
+            if (!safelyGroundCreatedVehicles || ownedVehicleGroundSettleJobs.Count == 0) return;
+
+            for (int i = ownedVehicleGroundSettleJobs.Count - 1; i >= 0; i--)
+            {
+                OwnedVehicleGroundSettleJob job = ownedVehicleGroundSettleJobs[i];
+                if (job == null || job.Record == null || !OwnedRecordBelongsToCurrentEpisode(job.Record))
+                {
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+                if (job.NextTick > tickCounter) continue;
+
+                Vehicle v = job.Vehicle;
+                if (!IsValidVehicle(v) && job.Record.WorldHandle != 0)
+                {
+                    v = VehicleFromHandle(job.Record.WorldHandle);
+                    job.Vehicle = v;
+                }
+                if (!IsValidVehicle(v))
+                {
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+                if (IsPlayerVehicle(v))
+                {
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+
+                job.Attempts++;
+                bool inAirBefore = IsVehicleInAirSafe(v);
+
+                if (!inAirBefore)
+                {
+                    if (!IsOwnedSpawnLikeSettleReason(job.Reason)) CaptureVehicleState(v, job.Record);
+                    job.Record.VehicleRef = v;
+                    job.Record.WorldHandle = TryGetVehicleHandle(v);
+                    job.Record.GroundWatchCooldownTick = tickCounter + 900;
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+
+                TryNudgeOwnedVehicleToSavedGround(v, job.Record);
+
+                bool inAir = IsVehicleInAirSafe(v);
+                if (!inAir)
+                {
+                    if (!IsOwnedSpawnLikeSettleReason(job.Reason)) CaptureVehicleState(v, job.Record);
+                    job.Record.VehicleRef = v;
+                    job.Record.WorldHandle = TryGetVehicleHandle(v);
+                    job.Record.GroundWatchCooldownTick = tickCounter + 900;
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+
+                if (job.Attempts >= 12)
+                {
+
+                    job.Record.VehicleRef = v;
+                    job.Record.WorldHandle = TryGetVehicleHandle(v);
+                    job.Record.GroundWatchCooldownTick = tickCounter + 1800;
+                    ownedVehicleGroundSettleJobs.RemoveAt(i);
+                    continue;
+                }
+
+                job.NextTick = tickCounter + 12;
+            }
+        }
+
+        private void TryNudgeOwnedVehicleToSavedGround(Vehicle v, OwnedVehicleRecord rec)
+        {
+            if (!IsValidVehicle(v) || rec == null) return;
+            try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
+            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
+            try { Function.Call("SET_CAR_ON_GROUND_PROPERLY", v); } catch { }
+            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
+            try { Function.Call("SET_CAR_HEADING", v, rec.Heading); } catch { }
+
+            if (IsVehicleInAirSafe(v))
+            {
+                float x;
+                float y;
+                float z;
+                if (TryGetVehiclePosition(v, out x, out y, out z))
+                {
+                }
+            }
+        }
+
+        private bool EnsureOwnedVehicleGroundedIfFloating(OwnedVehicleRecord rec, Vehicle v)
+        {
+            if (!safelyGroundCreatedVehicles || rec == null || !IsValidVehicle(v)) return false;
+            if (IsPlayerVehicle(v)) return false;
+            if (IsOwnedVehicleGroundSettlePending(rec)) return false;
+            if (rec.GroundWatchCooldownTick > tickCounter) return false;
+
+            if (!IsVehicleInAirSafe(v)) return false;
+
+            rec.GroundWatchCooldownTick = tickCounter + 900;
+            ScheduleOwnedVehicleGroundSettle(rec, v, "floating watch");
+            return true;
+        }
+
+        private bool IsVehicleInAirSafe(Vehicle v)
+        {
+            if (!IsValidVehicle(v)) return false;
+            if (vehicleInAirProperNativeState < 0) return false;
+            try
+            {
+                bool inAir = Function.Call<bool>("IS_CAR_IN_AIR_PROPER", v);
+                vehicleInAirProperNativeState = 1;
+                return inAir;
+            }
+            catch
+            {
+                vehicleInAirProperNativeState = -1;
+                return false;
+            }
         }
 
         private bool CanReclaimOwnedVehicleFromHandle(OwnedVehicleRecord rec, Vehicle v)
@@ -8589,8 +7774,8 @@ namespace LibertyVehicleServicesCE
                 if (!IsValidVehicle(best)) return false;
                 ClearOwnedVehicleBlip(rec, "owned vehicle fallback blip " + rec.Id);
                 ApplyVehicleState(best, rec);
-                SetVehicleOnGroundProperlyOnce(best, rec.Heading);
-                CaptureVehicleState(best, rec);
+                PlaceVehicleOnGroundSafe(best, rec.X, rec.Y, rec.Z, rec.Heading);
+                ScheduleOwnedVehicleGroundSettle(rec, best, "adoption");
                 if (markOwnedVehiclesAsMissionCars) MarkVehicleAsMission(best);
                 rec.VehicleRef = best;
                 rec.WorldHandle = TryGetVehicleHandle(best);
@@ -8701,10 +7886,13 @@ namespace LibertyVehicleServicesCE
                 Log("Could not spawn owned vehicle " + rec.Id + " model=" + rec.ModelName + ".");
                 return;
             }
+            RememberOwnedSpawnZLift(rec, v, pos.Z, "created");
             ClearOwnedVehicleBlip(rec, "owned vehicle fallback blip " + rec.Id);
             ApplyVehicleState(v, rec);
             PlaceVehicleOnGroundSafe(v, rec.X, rec.Y, rec.Z, rec.Heading);
-            CaptureVehicleState(v, rec);
+            RememberOwnedSpawnZLift(rec, v, pos.Z, "after-place-ground");
+            ownedSkipPositionCaptureUntilTick[rec] = tickCounter + 1800;
+            ScheduleOwnedVehicleGroundSettle(rec, v, "spawn");
             if (markOwnedVehiclesAsMissionCars) MarkVehicleAsMission(v);
             rec.VehicleRef = v;
             rec.WorldHandle = TryGetVehicleHandle(v);
@@ -8714,7 +7902,6 @@ namespace LibertyVehicleServicesCE
             if (reapplyPlateOnOwnedVehicleSpawn) ScheduleOwnedVehiclePlateApplication(rec, true);
             Log("Spawned owned vehicle " + rec.Id + " model=" + rec.ModelName + ".");
         }
-
 
         private Vehicle VehicleFromHandle(int handle)
         {
@@ -8770,16 +7957,6 @@ namespace LibertyVehicleServicesCE
             if (IsValidVehicle(v)) return v;
             if (IsValidVehicle(lastPlayerVehicle) && Distance(lastPlayerVehicle.Position, new Vector3(point.X, point.Y, point.Z)) <= point.VehicleRadius) return lastPlayerVehicle;
             return null;
-        }
-
-        private void ResetDealerPromptCandidateCache()
-        {
-            dealerPromptCandidateCooldown = 0;
-            dealerPromptCandidateDealer = null;
-            dealerPromptCandidateSlotIndex = -1;
-            dealerPromptCandidateVehicle = null;
-            dealerPromptCandidateExists = false;
-            dealerPromptCandidateSaleable = false;
         }
 
         private void RefreshDealerPromptCandidateCache(bool force)
@@ -8851,20 +8028,6 @@ namespace LibertyVehicleServicesCE
                 }
             }
             return dealer != null && slotIndex >= 0 && IsValidVehicle(vehicle);
-        }
-
-        private DealerDefinition GetDealerBySlotKey(string key)
-        {
-            if (key == null) return null;
-            int idx = key.IndexOf(':');
-            if (idx <= 0) return null;
-            string id = key.Substring(0, idx);
-            for (int i = 0; i < dealers.Count; i++)
-            {
-                DealerDefinition d = dealers[i];
-                if (d != null && d.Id == id) return d;
-            }
-            return null;
         }
 
         private int ParseDealerSlotIndex(string key)
@@ -8978,7 +8141,6 @@ namespace LibertyVehicleServicesCE
             {
                 lines.Add("Vehicle: " + modelLabel); selectable.Add(false);
                 lines.Add("Colour ID: " + dealerColourID.ToString()); selectable.Add(true);
-
 
                 for (int pad = 0; pad < 10; pad++) { lines.Add(""); selectable.Add(false); }
                 lines.Add("Use " + KeyLabel(keyUp) + "/" + KeyLabel(keyDown) + "/" + KeyLabel(keyLeft) + "/" + KeyLabel(keyRight) + " to choose a colour."); selectable.Add(false);
@@ -9284,7 +8446,6 @@ namespace LibertyVehicleServicesCE
             try { Function.Call("DISPLAY_TEXT_WITH_LITERAL_STRING", x, y, "STRING", text); } catch { }
         }
 
-
         private void DrawDealerColourPalette(float startX, float startY)
         {
             try
@@ -9425,46 +8586,6 @@ namespace LibertyVehicleServicesCE
             }
             return count;
         }
-
-        private float SafeGetPedHeadingPropertyOnly(Ped ped, float fallback)
-        {
-            if (ped == null) return fallback;
-            try
-            {
-                object value = ped.GetType().GetProperty("Heading").GetValue(ped, null);
-                if (value != null) return Convert.ToSingle(value);
-            }
-            catch { }
-            return fallback;
-        }
-
-
-        private bool TryGetVehiclePositionPropertyOnly(Vehicle v, out float x, out float y, out float z)
-        {
-            x = 0.0f; y = 0.0f; z = 0.0f;
-            if (!IsValidVehicle(v)) return false;
-            try
-            {
-                Vector3 p = v.Position;
-                x = p.X; y = p.Y; z = p.Z;
-                return true;
-            }
-            catch { }
-            return false;
-        }
-
-        private float SafeGetVehicleHeadingPropertyOnly(Vehicle v, float fallback)
-        {
-            if (!IsValidVehicle(v)) return fallback;
-            try
-            {
-                object value = v.GetType().GetProperty("Heading").GetValue(v, null);
-                if (value != null) return Convert.ToSingle(value);
-            }
-            catch { }
-            return fallback;
-        }
-
         private string GetVehicleDisplayName(string model)
         {
             if (model == null || model.Length == 0) return "Unknown";
@@ -9474,8 +8595,14 @@ namespace LibertyVehicleServicesCE
             VehicleDefinition def = ResolveVehicleDefinitionByLookupKey(key);
             if (def != null)
             {
+                string builtIn = GetBuiltInVehicleDisplayName(def, key);
+                if (IsUsableVehicleDisplayText(builtIn)) return builtIn;
+
                 string gxt = TryGetGxtLabel(def.GameName);
-                if (IsUsableVehicleDisplayText(gxt)) return TitleCaseToken(gxt);
+                if (IsUsableVehicleDisplayText(gxt) && !IsBareVehicleTokenForDefinition(gxt, def)) return TitleCaseToken(gxt);
+
+                string modelGxt = TryGetGxtLabel(def.ModelName);
+                if (IsUsableVehicleDisplayText(modelGxt) && !IsBareVehicleTokenForDefinition(modelGxt, def)) return TitleCaseToken(modelGxt);
 
                 string native = TryGetNativeVehicleLabel(def.Hash);
                 if (IsUsableVehicleDisplayText(native) && !IsBareVehicleTokenForDefinition(native, def)) return TitleCaseToken(native);
@@ -9504,6 +8631,27 @@ namespace LibertyVehicleServicesCE
                 if (modelKey != null && modelKey.Length > 0 && vehicleByModel.TryGetValue(modelKey, out def)) return def;
             }
             return null;
+        }
+
+        private void InitialiseBuiltInVehicleDisplayNames()
+        {
+
+            builtInVehicleDisplayNames.Clear();
+        }
+
+        private string GetBuiltInVehicleDisplayName(VehicleDefinition def, string lookupKey)
+        {
+            string display;
+            string key = NormaliseVehicleLookupKey(lookupKey);
+            if (key.Length > 0 && builtInVehicleDisplayNames.TryGetValue(key, out display)) return display;
+            if (def == null) return "";
+            key = NormaliseVehicleLookupKey(def.ModelName);
+            if (key.Length > 0 && builtInVehicleDisplayNames.TryGetValue(key, out display)) return display;
+            key = NormaliseVehicleLookupKey(def.GameName);
+            if (key.Length > 0 && builtInVehicleDisplayNames.TryGetValue(key, out display)) return display;
+            key = NormaliseVehicleLookupKey(def.HandlingName);
+            if (key.Length > 0 && builtInVehicleDisplayNames.TryGetValue(key, out display)) return display;
+            return "";
         }
 
         private bool IsBareVehicleTokenForDefinition(string text, VehicleDefinition def)
@@ -9587,7 +8735,6 @@ namespace LibertyVehicleServicesCE
             if (value < minimumDealerPrice) value = minimumDealerPrice;
             return value;
         }
-
 
         private float GetDealerSaleConditionPriceFactor(Vehicle v)
         {
@@ -9755,6 +8902,28 @@ namespace LibertyVehicleServicesCE
             return null;
         }
 
+        private float AdjustOwnedCapturedZForSpawnLift(OwnedVehicleRecord rec, float vehicleZ)
+        {
+            if (rec == null || rec.ModelName == null) return vehicleZ;
+            float lift;
+            string key = rec.ModelName.Trim().ToLowerInvariant();
+            if (key.Length == 0 || !ownedSpawnZLiftByModel.TryGetValue(key, out lift)) return vehicleZ;
+            if (lift < 0.65f || lift > 2.25f) return vehicleZ;
+            return vehicleZ - lift;
+        }
+
+        private void RememberOwnedSpawnZLift(OwnedVehicleRecord rec, Vehicle v, float requestedZ, string stage)
+        {
+            if (rec == null || rec.ModelName == null || !IsValidVehicle(v)) return;
+            float x; float y; float z;
+            if (!TryGetVehiclePosition(v, out x, out y, out z)) return;
+            float lift = z - requestedZ;
+            if (lift < 0.65f || lift > 2.25f) return;
+            string key = rec.ModelName.Trim().ToLowerInvariant();
+            if (key.Length == 0) return;
+            ownedSpawnZLiftByModel[key] = lift;
+        }
+
         private void CaptureVehicleState(Vehicle v, OwnedVehicleRecord rec)
         {
             if (!IsValidVehicle(v) || rec == null) return;
@@ -9793,7 +8962,13 @@ namespace LibertyVehicleServicesCE
             float x, y, z;
             if (TryGetVehiclePosition(v, out x, out y, out z))
             {
-                rec.X = x; rec.Y = y; rec.Z = z;
+                int skipUntil = 0;
+                bool skipPosition = ownedSkipPositionCaptureUntilTick.TryGetValue(rec, out skipUntil) && skipUntil > tickCounter;
+                if (!skipPosition)
+                {
+                    float captureZ = AdjustOwnedCapturedZForSpawnLift(rec, z);
+                    rec.X = x; rec.Y = y; rec.Z = captureZ;
+                }
             }
             rec.Heading = SafeGetVehicleHeading(v, rec.Heading);
             rec.Extras = CaptureExtras(v);
@@ -9856,7 +9031,6 @@ namespace LibertyVehicleServicesCE
             List<string> parts = new List<string>();
             for (int i = minExtraID; i <= maxExtraID; i++)
             {
-
 
                 if (captureAllExtraSlots || ExtraExistsNonDestructive(v, i))
                 {
@@ -9950,15 +9124,6 @@ namespace LibertyVehicleServicesCE
             return null;
         }
 
-        private OwnedVehicleRecord FindFirstDestroyedOwnedVehicle()
-        {
-            for (int i = 0; i < ownedVehicles.Count; i++)
-            {
-                if (ownedVehicles[i] != null && OwnedRecordBelongsToCurrentEpisode(ownedVehicles[i]) && ownedVehicles[i].Destroyed) return ownedVehicles[i];
-            }
-            return null;
-        }
-
         private bool IsPlayerVehicle(Vehicle v)
         {
             try { return Player.Character.isSittingInVehicle() && Player.Character.CurrentVehicle == v; }
@@ -10006,6 +9171,7 @@ namespace LibertyVehicleServicesCE
             vehicleByHash.Clear();
             vehicleByModel.Clear();
             vehicleModelAliases.Clear();
+            InitialiseBuiltInVehicleDisplayNames();
 
             string[] handlingPaths = new string[]
             {
@@ -10603,12 +9769,6 @@ namespace LibertyVehicleServicesCE
             return InferUnlockArea(d.Id, d.Name, d.X, d.Y);
         }
 
-        private string GetRegistrationUnlockArea(RegistrationPoint r)
-        {
-            if (r == null) return "broker_dukes";
-            return InferUnlockArea(r.Id, r.Name, r.X, r.Y);
-        }
-
         private string GetFuelStationUnlockArea(FuelStation station)
         {
             if (station == null) return "broker_dukes";
@@ -10704,7 +9864,6 @@ namespace LibertyVehicleServicesCE
             if (code == "K") return 90;
             return MetroStationBlipSprite;
         }
-
 
         private bool IsPauseMenuActiveSafe()
         {
@@ -10865,7 +10024,6 @@ namespace LibertyVehicleServicesCE
                 return;
             }
 
-
             PruneMetroStationBlips();
 
             for (int i = 0; i < metroStations.Count; i++)
@@ -11023,7 +10181,6 @@ namespace LibertyVehicleServicesCE
             return null;
         }
 
-
         private void UpdateOwnedVehicleBlips()
         {
             for (int i = 0; i < ownedVehicles.Count; i++)
@@ -11118,7 +10275,6 @@ namespace LibertyVehicleServicesCE
                 Log("Coordinate blip AddBlip reflection failed for " + purpose + ": " + ex.GetType().Name + ".");
             }
 
-
             return null;
         }
 
@@ -11178,9 +10334,7 @@ namespace LibertyVehicleServicesCE
             catch { }
             try { blip.Name = name == null ? "" : name; } catch (Exception ex) { Log("Could not set " + purpose + " name: " + ex.GetType().Name + "."); }
 
-
         }
-
 
         private void RemoveBlipSafe(Blip blip, string purpose)
         {
@@ -11237,7 +10391,6 @@ namespace LibertyVehicleServicesCE
 
         private void ApplyIniValue(string section, string key, string value)
         {
-
 
             string sec = section == null ? "" : section.Trim().ToLowerInvariant();
             string k = key == null ? "" : key.Trim().ToLowerInvariant();
@@ -11352,6 +10505,20 @@ namespace LibertyVehicleServicesCE
                 return;
             }
 
+            if (sec == "dashboard")
+            {
+                if (k == "enabled" || k == "enabledashboard") dashboardEnabled = ReadBool(value, dashboardEnabled);
+                else if (k == "enablelayouttuner" || k == "layouttuner") dashboardLayoutTunerEnabled = ReadBool(value, dashboardLayoutTunerEnabled);
+                return;
+            }
+
+            if (sec == "dashboardlayout")
+            {
+                float[] layoutValue;
+                if (TryParseDashboardLayoutValue(value, out layoutValue)) dashboardLayoutOverrides[NormaliseDashboardLayoutKey(k)] = layoutValue;
+                return;
+            }
+
             if (sec == "metro")
             {
                 if (k == "enabled") metroStationsEnabled = ReadBool(value, metroStationsEnabled);
@@ -11375,12 +10542,9 @@ namespace LibertyVehicleServicesCE
             {
                 if (k == "showdebugmessages") showDebugMessages = ReadBool(value, showDebugMessages);
                 else if (k == "logtofile") logToFile = ReadBool(value, logToFile);
-                else if (k == "logpositionhotkeyenabled") logPositionHotkeyEnabled = ReadBool(value, logPositionHotkeyEnabled);
-                else if (k == "logpositionkey") keyLogPosition = ReadKey(value, keyLogPosition);
                 return;
             }
         }
-
 
         private void AddModels(DealerDefinition d, string value)
         {
@@ -11392,6 +10556,770 @@ namespace LibertyVehicleServicesCE
                 if (m.Length == 0) continue;
                 d.Models.Add(m);
             }
+        }
+
+        private string NormaliseDashboardLayoutKey(string key)
+        {
+            if (key == null) return "";
+            return key.Trim().ToLowerInvariant().Replace("_", "").Replace("-", "").Replace(".", "").Replace(" ", "");
+        }
+
+        private bool TryParseDashboardLayoutValue(string value, out float[] result)
+        {
+            result = null;
+            if (String.IsNullOrEmpty(value)) return false;
+            string[] parts = value.Split(',');
+            if (parts.Length != 3) return false;
+            float x;
+            float y;
+            float scale;
+            if (!Single.TryParse(parts[0].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out x)) return false;
+            if (!Single.TryParse(parts[1].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out y)) return false;
+            if (!Single.TryParse(parts[2].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out scale)) return false;
+            if (scale < 0.45f || scale > 2.50f) return false;
+            result = new float[] { x, y, scale };
+            return true;
+        }
+
+        private bool TryResolveDashboardLayoutKey(string key, out int mode, out int part, out string canonicalKey)
+        {
+            mode = 0;
+            part = -1;
+            canonicalKey = "";
+            string k = NormaliseDashboardLayoutKey(key);
+            if (k.StartsWith("road")) { mode = 1; k = k.Substring(4); canonicalKey = "Road"; }
+            else if (k.StartsWith("marine")) { mode = 2; k = k.Substring(6); canonicalKey = "Marine"; }
+            else if (k.StartsWith("aircraft")) { mode = 3; k = k.Substring(8); canonicalKey = "Aircraft"; }
+            else if (k.StartsWith("bike")) { mode = 4; k = k.Substring(4); canonicalKey = "Bike"; }
+            else return false;
+
+            if (k == "all") { part = DashboardLayoutPartAll; canonicalKey += "All"; }
+            else if (k == "speed" || k == "speedometer") { part = DashboardLayoutPartSpeedometer; canonicalKey += "Speedometer"; }
+            else if (k == "tach" || k == "tachometer") { part = DashboardLayoutPartTachometer; canonicalKey += "Tachometer"; }
+            else if (k == "fuel") { part = DashboardLayoutPartFuel; canonicalKey += "Fuel"; }
+            else return false;
+
+            if (mode == 4 && part == DashboardLayoutPartSpeedometer) return false;
+            if ((mode == 2 || mode == 3) && part == DashboardLayoutPartTachometer) return false;
+            return true;
+        }
+
+        private void ApplyDashboardLayoutOverridesToBridge()
+        {
+            if (!dashboardBridgeAvailable || dashboardLayoutOverridesApplied) return;
+            dashboardLayoutOverridesApplied = true;
+            int applied = 0;
+            foreach (KeyValuePair<string, float[]> pair in dashboardLayoutOverrides)
+            {
+                int mode;
+                int part;
+                string canonicalKey;
+                float[] values = pair.Value;
+                if (values == null || values.Length != 3) continue;
+                if (!TryResolveDashboardLayoutKey(pair.Key, out mode, out part, out canonicalKey)) continue;
+                try
+                {
+                    if (LVSCE_DASH_SetLayout(mode, part, values[0], values[1], values[2]) > 0) applied++;
+                }
+                catch { }
+            }
+            if (applied > 0) Log("DASHBOARD_LAYOUT loaded " + applied.ToString() + " override(s) from [DashboardLayout].");
+        }
+
+        private void TryPersistDashboardLayoutSaveRequest()
+        {
+            if (!dashboardBridgeAvailable) return;
+            int requested = 0;
+            try { requested = LVSCE_DASH_ConsumeLayoutSaveRequest(); }
+            catch { return; }
+            if (requested <= 0) return;
+            SaveDashboardLayoutOverridesToIni();
+        }
+
+        private void AddDashboardLayoutEntry(List<string> entries, Dictionary<string, float[]> saved, string key, int mode, int part)
+        {
+            float x;
+            float y;
+            float scale;
+            float defaultX;
+            float defaultY;
+            float defaultScale;
+            try
+            {
+                if (LVSCE_DASH_GetLayout(mode, part, out x, out y, out scale) <= 0) return;
+                if (LVSCE_DASH_GetLayoutDefault(mode, part, out defaultX, out defaultY, out defaultScale) <= 0) return;
+            }
+            catch { return; }
+            const float epsilon = 0.00005f;
+            if (Math.Abs(x - defaultX) <= epsilon && Math.Abs(y - defaultY) <= epsilon && Math.Abs(scale - defaultScale) <= epsilon) return;
+            entries.Add(key + "=" + x.ToString("0.000000", CultureInfo.InvariantCulture) + "," + y.ToString("0.000000", CultureInfo.InvariantCulture) + "," + scale.ToString("0.000000", CultureInfo.InvariantCulture));
+            saved[NormaliseDashboardLayoutKey(key)] = new float[] { x, y, scale };
+        }
+
+        private void SaveDashboardLayoutOverridesToIni()
+        {
+            try
+            {
+                List<string> entries = new List<string>();
+                Dictionary<string, float[]> saved = new Dictionary<string, float[]>();
+                AddDashboardLayoutEntry(entries, saved, "RoadAll", 1, DashboardLayoutPartAll);
+                AddDashboardLayoutEntry(entries, saved, "RoadSpeedometer", 1, DashboardLayoutPartSpeedometer);
+                AddDashboardLayoutEntry(entries, saved, "RoadTachometer", 1, DashboardLayoutPartTachometer);
+                AddDashboardLayoutEntry(entries, saved, "RoadFuel", 1, DashboardLayoutPartFuel);
+                AddDashboardLayoutEntry(entries, saved, "BikeAll", 4, DashboardLayoutPartAll);
+                AddDashboardLayoutEntry(entries, saved, "BikeTachometer", 4, DashboardLayoutPartTachometer);
+                AddDashboardLayoutEntry(entries, saved, "BikeFuel", 4, DashboardLayoutPartFuel);
+                AddDashboardLayoutEntry(entries, saved, "MarineAll", 2, DashboardLayoutPartAll);
+                AddDashboardLayoutEntry(entries, saved, "MarineSpeedometer", 2, DashboardLayoutPartSpeedometer);
+                AddDashboardLayoutEntry(entries, saved, "MarineFuel", 2, DashboardLayoutPartFuel);
+                AddDashboardLayoutEntry(entries, saved, "AircraftAll", 3, DashboardLayoutPartAll);
+                AddDashboardLayoutEntry(entries, saved, "AircraftSpeedometer", 3, DashboardLayoutPartSpeedometer);
+                AddDashboardLayoutEntry(entries, saved, "AircraftFuel", 3, DashboardLayoutPartFuel);
+
+                List<string> output = new List<string>();
+                string[] source = File.Exists(iniPath) ? File.ReadAllLines(iniPath) : new string[0];
+                bool skippingLayout = false;
+                for (int i = 0; i < source.Length; i++)
+                {
+                    string line = source[i];
+                    string trimmed = line.Trim();
+                    if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
+                    {
+                        string section = trimmed.Substring(1, trimmed.Length - 2).Trim();
+                        if (section.Equals("DashboardLayout", StringComparison.OrdinalIgnoreCase))
+                        {
+                            skippingLayout = true;
+                            continue;
+                        }
+                        skippingLayout = false;
+                    }
+                    if (!skippingLayout) output.Add(line);
+                }
+                while (output.Count > 0 && output[output.Count - 1].Trim().Length == 0) output.RemoveAt(output.Count - 1);
+                if (entries.Count > 0)
+                {
+                    output.Add("");
+                    output.Add("[DashboardLayout]");
+                    output.AddRange(entries);
+                }
+                File.WriteAllLines(iniPath, output.ToArray());
+                dashboardLayoutOverrides = saved;
+                Log("DASHBOARD_LAYOUT saved " + entries.Count.ToString() + " non-default override(s) to [DashboardLayout].");
+                Notify(entries.Count > 0 ? "Dashboard layout saved." : "Dashboard layout reset to defaults.");
+            }
+            catch (Exception ex)
+            {
+                Log("DASHBOARD_LAYOUT_SAVE_ERROR: " + ex.GetType().Name + ".");
+                Notify("Could not save dashboard layout.");
+            }
+        }
+
+        private bool DetectDashboardBridge(bool logWhenMissing)
+        {
+            if (!dashboardEnabled) return false;
+            if (dashboardBridgeChecked)
+            {
+                if (dashboardBridgeAvailable && !dashboardLayoutOverridesApplied) ApplyDashboardLayoutOverridesToBridge();
+                if (!dashboardBridgeAvailable && logWhenMissing && !dashboardBridgeMissingLogged)
+                {
+                    Log("DASHBOARD_BRIDGE_NOT_FOUND: plugins\\000_LVSCE_Dashboard_Bridge.asi was not detected or could not be loaded. Dashboard will stay hidden.");
+                    dashboardBridgeMissingLogged = true;
+                }
+                return dashboardBridgeAvailable;
+            }
+            dashboardBridgeChecked = true;
+            dashboardBridgeAvailable = false;
+            try
+            {
+                if (!File.Exists("plugins\\000_LVSCE_Dashboard_Bridge.asi"))
+                {
+                    if (logWhenMissing && !dashboardBridgeMissingLogged)
+                    {
+                        Log("DASHBOARD_BRIDGE_NOT_FOUND: plugins\\000_LVSCE_Dashboard_Bridge.asi is missing.");
+                        dashboardBridgeMissingLogged = true;
+                    }
+                    return false;
+                }
+                int install = LVSCE_DASH_Install();
+                int status = LVSCE_DASH_GetStatus();
+                int version = LVSCE_DASH_GetBridgeVersion();
+                dashboardBridgeAvailable = install > 0 && version >= DashboardBridgeRequiredVersion;
+                if (!dashboardBridgeStatusLogged)
+                {
+                    Log("DASHBOARD_BRIDGE_STATUS: install=" + install.ToString() + ", status=0x" + status.ToString("X") + ", version=" + version.ToString() + ".");
+                    dashboardBridgeStatusLogged = true;
+                }
+                if (dashboardBridgeAvailable && !dashboardLayoutOverridesApplied) ApplyDashboardLayoutOverridesToBridge();
+                return dashboardBridgeAvailable;
+            }
+            catch (DllNotFoundException)
+            {
+                if (logWhenMissing && !dashboardBridgeMissingLogged) { Log("DASHBOARD_BRIDGE_NOT_FOUND: bridge DLL could not be loaded."); dashboardBridgeMissingLogged = true; }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                if (!dashboardBridgeMissingLogged) { Log("DASHBOARD_BRIDGE_INVALID: bridge exports are missing. Reinstall 000_LVSCE_Dashboard_Bridge.asi."); dashboardBridgeMissingLogged = true; }
+            }
+            catch (BadImageFormatException)
+            {
+                if (!dashboardBridgeMissingLogged) { Log("DASHBOARD_BRIDGE_INVALID: bridge has wrong bitness or is not a valid Win32 DLL/ASI."); dashboardBridgeMissingLogged = true; }
+            }
+            catch (Exception ex)
+            {
+                if (!dashboardBridgeMissingLogged) { Log("DASHBOARD_BRIDGE_ERROR: " + ex.GetType().Name + "."); dashboardBridgeMissingLogged = true; }
+            }
+            return false;
+        }
+
+        private void HideDashboardBridgeIfAvailable()
+        {
+            if (!dashboardEnabled || !dashboardBridgeAvailable) return;
+            SubmitDashboardFrame(0, 0, 0.0f, -1.0f, 0, -1.0f, -1, 0.0f, 0.0f, -1, -1, -1, -1, -1, -1, 1.0f);
+        }
+
+        private void UpdateDashboardBridgeTransientUiGuard()
+        {
+            if (!dashboardEnabled || !dashboardBridgeAvailable) return;
+
+            bool cutsceneGuard = false;
+            try { cutsceneGuard = IsDashboardBridgeCutsceneGuardActive(); }
+            catch { cutsceneGuard = false; }
+
+            int cutState = cutsceneGuard ? 1 : 0;
+            int tunerState = dashboardLayoutTunerEnabled ? 1 : 0;
+            try { LVSCE_DASH_SetRuntimeOptions(cutState, tunerState); }
+            catch { }
+
+            if (cutState != dashboardUiGuardLastCutsceneState || tunerState != dashboardUiGuardLastLayoutTunerState)
+            {
+                Log("DASHBOARD_UI_GUARD cutscene=" + cutState.ToString() + ", layoutTuner=" + tunerState.ToString() + ".");
+                dashboardUiGuardLastCutsceneState = cutState;
+                dashboardUiGuardLastLayoutTunerState = tunerState;
+            }
+        }
+
+        private bool IsDashboardBridgeCutsceneGuardActive()
+        {
+            try
+            {
+                if (Function.Call<bool>("IS_SCREEN_FADING")) return true;
+            }
+            catch { }
+
+            try
+            {
+                if (!Function.Call<bool>("IS_SCREEN_FADED_IN")) return true;
+            }
+            catch { }
+
+            try
+            {
+                if (IsFuelHudCutsceneOverlayActive()) return true;
+            }
+            catch { }
+
+            return false;
+        }
+
+        private void UpdateDashboardBridge()
+        {
+            if (!dashboardEnabled) return;
+            if (!DetectDashboardBridge(true)) return;
+            UpdateDashboardBridgeTransientUiGuard();
+            TryPersistDashboardLayoutSaveRequest();
+            if (IsDashboardSuppressedBySafeUiState())
+            {
+                SubmitDashboardFrame(0, 0, 0.0f, -1.0f, 0, -1.0f, -1, 0.0f, 0.0f, -1, -1, -1, -1, -1, -1, 1.0f);
+                return;
+            }
+            int mode = 0;
+            int handle = 0;
+            float speedMps = 0.0f;
+            float signedSpeedMps = 0.0f;
+            float fuelPercent = -1.0f;
+            int lowFuel = 0;
+            float rpm = -1.0f;
+            int gear = -99;
+            float heading = 0.0f;
+            float altitude = 0.0f;
+            int engineOn = -1;
+            int checkEngineOn = -1;
+            int lightsOn = -1;
+            int highBeamOn = -1;
+            int leftIndicatorOn = -1;
+            int rightIndicatorOn = -1;
+            float opacity = 1.0f;
+            try
+            {
+                Vehicle v = null;
+                if (!IsPlayerValid() || !Player.Character.isSittingInVehicle())
+                {
+                    if (TrySubmitDashboardCachedVehicleFrame()) return;
+                    SubmitDashboardFrame(mode, handle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity);
+                    return;
+                }
+                v = Player.Character.CurrentVehicle;
+                if (!IsValidVehicle(v) || !IsPlayerDriverOfVehicle(v))
+                {
+                    if (TrySubmitDashboardCachedVehicleFrame()) return;
+                    SubmitDashboardFrame(mode, handle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity);
+                    return;
+                }
+                mode = GetDashboardVehicleMode(v);
+                if (mode == 0)
+                {
+
+                    dashboardCachedMode = 0;
+                    dashboardCachedVehicleHandle = 0;
+                    dashboardCachedUntilMs = 0;
+                    SubmitDashboardFrame(mode, handle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity);
+                    return;
+                }
+                handle = ResolveLcpScriptVehicleHandle(v);
+                if (handle == 0) handle = TryGetVehicleHandle(v);
+                speedMps = SafeGetVehicleSpeedMps(v);
+                signedSpeedMps = EstimateDashboardSignedSpeedMps(v, handle);
+                gear = EstimateDashboardGear(v, handle, speedMps, mode, signedSpeedMps);
+                engineOn = GetDashboardKnownEngineState(v, handle);
+                checkEngineOn = GetDashboardCheckEngineState(v, handle);
+                heading = SafeGetVehicleHeading(v, 0.0f);
+                float x; float y; float z;
+                if (TryGetVehiclePosition(v, out x, out y, out z)) altitude = z;
+                fuelPercent = GetDashboardFuelPercent(v);
+                if (fuelModuleEnabled && fuelPercent >= 0.0f && fuelPercent <= DashboardLowFuelWarningPercent) lowFuel = 1;
+                opacity = GetDashboardOpacity(v, handle);
+                if (opacity <= 0.02f) mode = 0;
+                SubmitDashboardFrame(mode, handle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity);
+                CacheDashboardVisibleVehicleFrame(mode, handle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity);
+                SubmitDashboardTelemetry(v, handle, speedMps, signedSpeedMps, gear, mode);
+            }
+            catch { }
+        }
+
+        private void CacheDashboardVisibleVehicleFrame(int mode, int vehicleHandle, float speedMps, float fuelPercent, int lowFuel, float rpm, int gear, float heading, float altitude, int engineOn, int checkEngineOn, int lightsOn, int highBeamOn, int leftIndicatorOn, int rightIndicatorOn, float opacity)
+        {
+            if (mode != 1 && mode != 2 && mode != 3 && mode != 4) return;
+            if (vehicleHandle == 0 || opacity <= 0.02f) return;
+            dashboardCachedMode = mode;
+            dashboardCachedVehicleHandle = vehicleHandle;
+            dashboardCachedSpeedMps = speedMps;
+            dashboardCachedFuelPercent = fuelPercent;
+            dashboardCachedLowFuel = lowFuel;
+            dashboardCachedRpm = rpm;
+            dashboardCachedGear = gear;
+            dashboardCachedHeading = heading;
+            dashboardCachedAltitude = altitude;
+            dashboardCachedEngineOn = engineOn;
+            dashboardCachedCheckEngineOn = checkEngineOn;
+            dashboardCachedLightsOn = lightsOn;
+            dashboardCachedHighBeamOn = highBeamOn;
+            dashboardCachedLeftIndicatorOn = leftIndicatorOn;
+            dashboardCachedRightIndicatorOn = rightIndicatorOn;
+            dashboardCachedOpacity = opacity;
+            dashboardCachedUntilMs = unchecked(Environment.TickCount + DashboardVehicleTransientHoldMs);
+        }
+
+        private bool IsDashboardDeadlineActive(int now, int untilMs)
+        {
+            if (untilMs == 0) return false;
+            unchecked { return ((uint)(untilMs - now)) < 0x80000000u; }
+        }
+
+        private bool TrySubmitDashboardCachedVehicleFrame()
+        {
+            if (dashboardCachedMode != 1 && dashboardCachedMode != 2 && dashboardCachedMode != 3 && dashboardCachedMode != 4) return false;
+            if (dashboardCachedVehicleHandle == 0) return false;
+            int now = Environment.TickCount;
+            if (!IsDashboardDeadlineActive(now, dashboardCachedUntilMs)) return false;
+
+            SubmitDashboardFrame(dashboardCachedMode, dashboardCachedVehicleHandle, dashboardCachedSpeedMps, dashboardCachedFuelPercent, dashboardCachedLowFuel, dashboardCachedRpm, dashboardCachedGear, dashboardCachedHeading, dashboardCachedAltitude, dashboardCachedEngineOn, dashboardCachedCheckEngineOn, dashboardCachedLightsOn, dashboardCachedHighBeamOn, dashboardCachedLeftIndicatorOn, dashboardCachedRightIndicatorOn, dashboardCachedOpacity);
+            return true;
+        }
+
+        private int SubmitDashboardFrame(int mode, int vehicleHandle, float speedMps, float fuelPercent, int lowFuel, float rpm, int gear, float heading, float altitude, int engineOn, int checkEngineOn, int lightsOn, int highBeamOn, int leftIndicatorOn, int rightIndicatorOn, float opacity)
+        {
+            try { return LVSCE_DASH_SubmitFrame(mode, vehicleHandle, speedMps, fuelPercent, lowFuel, rpm, gear, heading, altitude, engineOn, checkEngineOn, lightsOn, highBeamOn, leftIndicatorOn, rightIndicatorOn, opacity); }
+            catch (Exception ex)
+            {
+                if (!dashboardBridgeMissingLogged)
+                {
+                    Log("DASHBOARD_SUBMIT_ERROR: " + ex.GetType().Name + ".");
+                    dashboardBridgeMissingLogged = true;
+                }
+                return -1;
+            }
+        }
+
+        private void SubmitDashboardTelemetry(Vehicle v, int handle, float speedMps, float signedSpeedMps, int gear, int mode)
+        {
+            if (!dashboardEnabled || !dashboardBridgeAvailable) return;
+            try
+            {
+                int address = TryGetVehicleMemoryAddress(v);
+                LVSCE_DASH_SubmitTelemetry(address, handle, speedMps, signedSpeedMps, gear, mode);
+            }
+            catch { }
+        }
+
+        private int TryGetVehicleMemoryAddress(Vehicle v)
+        {
+            return TryGetObjectMemoryAddress(v);
+        }
+
+        private int TryGetObjectMemoryAddress(object obj)
+        {
+            if (obj == null) return 0;
+            string[] names = new string[] { "MemoryAddress", "Address", "Pointer", "NativePointer", "MemoryPointer", "m_pVehicle", "pVehicle", "VehiclePointer", "m_pPed", "pPed", "PedPointer", "m_pEntity", "pEntity", "EntityPointer", "CPed", "CVehicle" };
+            Type t = obj.GetType();
+            for (int i = 0; i < names.Length; i++)
+            {
+                try
+                {
+                    PropertyInfo p = t.GetProperty(names[i], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (p != null)
+                    {
+                        object value = p.GetValue(obj, null);
+                        int converted = ConvertPointerLikeValue(value);
+                        if (converted != 0) return converted;
+                    }
+                }
+                catch { }
+                try
+                {
+                    FieldInfo f = t.GetField(names[i], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (f != null)
+                    {
+                        object value = f.GetValue(obj);
+                        int converted = ConvertPointerLikeValue(value);
+                        if (converted != 0) return converted;
+                    }
+                }
+                catch { }
+            }
+            return 0;
+        }
+
+        private int ConvertPointerLikeValue(object value)
+        {
+            if (value == null) return 0;
+            try
+            {
+                if (value is IntPtr) return ((IntPtr)value).ToInt32();
+                if (value is UIntPtr) return unchecked((int)((UIntPtr)value).ToUInt32());
+                if (value is int) return (int)value;
+                if (value is uint) return unchecked((int)(uint)value);
+                if (value is long) return unchecked((int)(long)value);
+                if (value is ulong) return unchecked((int)(ulong)value);
+            }
+            catch { }
+            return 0;
+        }
+
+        private bool IsDashboardOperational()
+        {
+            if (!dashboardEnabled || !dashboardBridgeAvailable) return false;
+            try
+            {
+                int status = LVSCE_DASH_GetStatus();
+                return (status & 0x7) == 0x7;
+            }
+            catch { return false; }
+        }
+
+        private bool IsDashboardOperationalForCurrentVehicle()
+        {
+            if (!IsDashboardOperational()) return false;
+            try
+            {
+                if (!IsPlayerValid() || !Player.Character.isSittingInVehicle()) return false;
+                Vehicle v = Player.Character.CurrentVehicle;
+                if (!IsValidVehicle(v) || !IsPlayerDriverOfVehicle(v)) return false;
+                return GetDashboardVehicleMode(v) != 0;
+            }
+            catch { return false; }
+        }
+
+        private bool IsDashboardSuppressedBySafeUiState()
+        {
+            if (menuOpen || WorkshopMenuOpenSafe()) return true;
+            if (!ShouldDrawDashboardBaseHud()) return true;
+            return false;
+        }
+
+        private bool ShouldDrawDashboardBaseHud()
+        {
+            if (IsFuelGameplaySuspended()) return false;
+
+            try
+            {
+                if (IsPauseMenuActiveSafe()) return false;
+            }
+            catch { }
+
+            try
+            {
+                if (Function.Call<bool>("IS_SCREEN_FADING")) return false;
+            }
+            catch { }
+
+            try
+            {
+                if (!Function.Call<bool>("IS_SCREEN_FADED_IN")) return false;
+            }
+            catch { }
+
+            if (IsFuelHudCutsceneOverlayActive()) return false;
+            return true;
+        }
+
+        private float GetDashboardOpacity(Vehicle v, int handle)
+        {
+            return 1.0f;
+        }
+
+        private bool TryDashboardNativeBoolNoArgs(string nativeName, out bool value)
+        {
+            value = false;
+            if (nativeName == null || nativeName.Length == 0) return false;
+            if (dashboardNativeBoolUnavailable.ContainsKey(nativeName)) return false;
+            try
+            {
+                value = Function.Call<bool>(nativeName);
+                return true;
+            }
+            catch
+            {
+                dashboardNativeBoolUnavailable[nativeName] = true;
+                Log("DASHBOARD_UI_NATIVE_UNAVAILABLE: " + nativeName + ".");
+                return false;
+            }
+        }
+
+        private int GetDashboardVehicleMode(Vehicle v)
+        {
+            if (!IsValidVehicle(v)) return 0;
+
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
+            if (def == null) return 0;
+
+            string model = def.ModelName == null ? "" : def.ModelName.Trim().ToLowerInvariant();
+            if (model == "bmx" || model == "rhino") return 0;
+
+            int hash = TryGetVehicleModelHash(v);
+
+            if (TryIsModelType(hash, "IS_THIS_MODEL_A_HELI") || TryIsModelType(hash, "IS_THIS_MODEL_A_PLANE")) return 3;
+            if (TryIsModelType(hash, "IS_THIS_MODEL_A_BOAT")) return 2;
+            if (TryIsModelType(hash, "IS_THIS_MODEL_A_BIKE")) return 4;
+            if (TryIsModelType(hash, "IS_THIS_MODEL_A_CAR")) return 1;
+
+            string section = def.Section == null ? "" : def.Section.Trim().ToLowerInvariant();
+            if (section == "heli" || section == "planes") return 3;
+            if (section == "boats") return 2;
+            if (section == "bikes" || def.IsBike) return 4;
+            if (section == "cars") return 1;
+            return 0;
+        }
+
+        private int GetDashboardKnownEngineState(Vehicle v, int handle)
+        {
+            if (!fuelModuleEnabled || !IsValidVehicle(v) || handle == 0) return -1;
+            try
+            {
+                if (fuelRefuelling)
+                {
+                    Vehicle rv = fuelRefuellingVehicle;
+                    if (IsValidVehicle(rv) && TryGetVehicleHandle(rv) == handle) return 0;
+                }
+
+                int now = Environment.TickCount;
+                if (fuelSputterRestoreVehicleHandle == handle && fuelSputterRestoreAtMs > now) return 0;
+
+                FuelVehicleState state = null;
+                if (fuelCurrentState != null && fuelCurrentState.Handle == handle) state = fuelCurrentState;
+                else
+                {
+                    try { fuelStates.TryGetValue(handle, out state); } catch { state = null; }
+                }
+                if (state != null)
+                {
+                    if (state.EngineForcedOff) return 0;
+                    if (state.FuelGallons <= FuelEpsilonGallons) return 0;
+                }
+            }
+            catch { }
+            return -1;
+        }
+
+        private int GetDashboardCheckEngineState(Vehicle v, int handle)
+        {
+            if (!IsValidVehicle(v) || handle == 0) return -1;
+            if (dashboardCheckEngineVehicleHandle != handle)
+            {
+                dashboardCheckEngineVehicleHandle = handle;
+                dashboardCheckEngineLatched = false;
+            }
+            try
+            {
+                float engineHealth = (float)v.EngineHealth;
+                if (!dashboardCheckEngineLatched && engineHealth <= DashboardCheckEngineOnThreshold) dashboardCheckEngineLatched = true;
+                else if (dashboardCheckEngineLatched && engineHealth >= DashboardCheckEngineOffThreshold) dashboardCheckEngineLatched = false;
+                return dashboardCheckEngineLatched ? 1 : 0;
+            }
+            catch { }
+            return -1;
+        }
+
+        private float GetDashboardFuelPercent(Vehicle v)
+        {
+            if (!IsValidVehicle(v)) return -1.0f;
+            if (!fuelModuleEnabled) return 100.0f;
+            int handle = TryGetVehicleHandle(v);
+            FuelVehicleState state = null;
+            if (handle != 0 && fuelStates.TryGetValue(handle, out state) && state != null && state.CapacityGallons > 0.0f)
+            {
+                return ClampFloat(state.FuelGallons * 100.0f / state.CapacityGallons, 0.0f, 100.0f);
+            }
+            OwnedVehicleRecord rec = FindOwnedRecordForVehicle(v);
+            if (rec != null && rec.FuelKnown && rec.FuelGallons >= 0.0f)
+            {
+                VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
+                float capacity = GetFuelCapacityGallons(v, def);
+                if (capacity > 0.0f) return ClampFloat(rec.FuelGallons * 100.0f / capacity, 0.0f, 100.0f);
+            }
+            return -1.0f;
+        }
+
+        private float SafeGetVehicleSpeedMps(Vehicle v)
+        {
+            if (!IsValidVehicle(v)) return 0.0f;
+            try
+            {
+                PropertyInfo p = v.GetType().GetProperty("Speed");
+                if (p != null)
+                {
+                    object value = p.GetValue(v, null);
+                    if (value != null) return Math.Max(0.0f, Convert.ToSingle(value));
+                }
+            }
+            catch { }
+            try { return Math.Max(0.0f, Function.Call<float>("GET_CAR_SPEED", v)); }
+            catch { return 0.0f; }
+        }
+
+        private int EstimateDashboardGear(Vehicle v, int handle, float speedMps, int mode, float signedSpeed)
+        {
+            if (!IsValidVehicle(v) || mode != 1) return -99;
+
+            if (IsDashboardReverseLatched(handle, signedSpeed, speedMps)) return -1;
+            if (speedMps < 0.65f) return 0;
+
+            VehicleDefinition def = GetVehicleDefinitionByHashFast(v);
+            int maxGear = EstimateDashboardMaxGear(def);
+            float maxKmh = EstimateDashboardMaxSpeedKmh(def);
+            float kmh = speedMps * 3.6f;
+
+            for (int gearIndex = 1; gearIndex <= maxGear; gearIndex++)
+            {
+                double ratio = (double)gearIndex / (double)maxGear;
+                float top = (float)(maxKmh * Math.Pow(ratio, 1.18));
+                if (kmh <= top) return gearIndex;
+            }
+            return maxGear;
+        }
+
+        private bool IsDashboardReverseLatched(int handle, float signedSpeedMps, float speedMps)
+        {
+            int now = Environment.TickCount;
+            if (handle == 0)
+            {
+                dashboardReverseLatchHandle = 0;
+                dashboardReverseLatchUntilMs = 0;
+                return false;
+            }
+
+            if (dashboardReverseLatchHandle != handle)
+            {
+                dashboardReverseLatchHandle = handle;
+                dashboardReverseLatchUntilMs = 0;
+            }
+
+            if (speedMps < 0.20f)
+            {
+                dashboardReverseLatchUntilMs = 0;
+                return false;
+            }
+
+            if (speedMps <= 42.0f && signedSpeedMps < -0.35f)
+            {
+                dashboardReverseLatchUntilMs = now + 6500;
+                return true;
+            }
+
+            if (dashboardReverseLatchUntilMs > 0 && now <= dashboardReverseLatchUntilMs && speedMps >= 0.20f && speedMps <= 44.0f)
+            {
+
+                if (signedSpeedMps <= 14.0f) return true;
+            }
+
+            if (signedSpeedMps > 14.0f || speedMps > 44.0f)
+            {
+                dashboardReverseLatchUntilMs = 0;
+                return false;
+            }
+
+            return false;
+        }
+
+        private int EstimateDashboardMaxGear(VehicleDefinition def)
+        {
+            if (def == null) return 5;
+            if (def.IsBike) return 6;
+            if (def.IsSports || def.Swankness >= 5) return 6;
+            if (def.IsIndustrial) return 5;
+            if (def.Swankness <= 1) return 4;
+            return 5;
+        }
+
+        private float EstimateDashboardMaxSpeedKmh(VehicleDefinition def)
+        {
+            if (def == null) return 190.0f;
+            if (def.IsBike) return 230.0f;
+            if (def.IsSports || def.Swankness >= 5) return 245.0f;
+            if (def.IsIndustrial) return 145.0f;
+            if (def.Swankness <= 1) return 155.0f;
+            if (def.Swankness >= 4) return 220.0f;
+            return 185.0f;
+        }
+
+        private float EstimateDashboardSignedSpeedMps(Vehicle v, int handle)
+        {
+            if (!IsValidVehicle(v) || handle == 0) return SafeGetVehicleSpeedMps(v);
+            float x;
+            float y;
+            float z;
+            if (!TryGetVehiclePosition(v, out x, out y, out z)) return SafeGetVehicleSpeedMps(v);
+            int now = Environment.TickCount;
+            float result = SafeGetVehicleSpeedMps(v);
+            if (dashboardGearLastHandle == handle && dashboardGearLastTick > 0)
+            {
+                int dtMs = now - dashboardGearLastTick;
+                if (dtMs >= 40 && dtMs <= 1000)
+                {
+                    float dt = dtMs / 1000.0f;
+                    float dx = x - dashboardGearLastX;
+                    float dy = y - dashboardGearLastY;
+                    float heading = SafeGetVehicleHeading(v, 0.0f) * 0.01745329252f;
+                    float fx = (float)Math.Sin(heading);
+                    float fy = (float)Math.Cos(heading);
+                    float signed = (dx * fx + dy * fy) / Math.Max(0.001f, dt);
+                    if (!Single.IsNaN(signed) && !Single.IsInfinity(signed)) result = signed;
+                }
+            }
+            dashboardGearLastHandle = handle;
+            dashboardGearLastTick = now;
+            dashboardGearLastX = x;
+            dashboardGearLastY = y;
+            return result;
         }
 
         private bool DetectLibertyCityPlates(bool logWhenMissing)
@@ -11700,7 +11628,6 @@ namespace LibertyVehicleServicesCE
                     EnsurePlateForOwnedRecord(rec);
                     ScheduleOwnedVehiclePlateApplication(rec, true);
                 }
-
 
                 if (rec.PlateApplySucceeded) continue;
                 if (rec.PlateApplyAttempts >= plateApplyMaxAttempts) continue;
@@ -12149,7 +12076,6 @@ namespace LibertyVehicleServicesCE
             else if (key == "lcprawinput") rec.LcpRawInput = CleanPlateRawInput(value);
         }
 
-
         private void SaveOwnedVehicles()
         {
             if (!ownershipEnabled) return;
@@ -12252,7 +12178,6 @@ namespace LibertyVehicleServicesCE
             AddFuelStation("ron_broker", "RON", "road", 1129.090f, -358.859f, 19.025f, 7.0f);
             AddFuelStation("ron_chase_point", "RON", "road", 774.382f, 195.533f, 6.182f, 7.0f);
             AddFuelStation("ron_truck_station", "RON Truck Station", "road", 1330.720f, 896.690f, 13.190f, 5.0f);
-
 
             AddFuelStation("marine_steinway", "Steinway marine fuel", "boat", 1068.500f, 1073.000f, 0.000f, 20.0f);
             AddFuelStation("marine_east_hook", "East Hook marine fuel", "boat", 697.700f, -77.900f, 0.000f, 10.0f);
@@ -12437,7 +12362,6 @@ namespace LibertyVehicleServicesCE
             }
             int elapsedMs = now - fuelLastUpdateMs;
 
-
             EnforceOutOfFuelVehicleBetweenFuelTicks();
             EnforceRefuellingVehicleBetweenFuelTicks();
             if (elapsedMs < FuelUpdateIntervalMs) return;
@@ -12570,6 +12494,7 @@ namespace LibertyVehicleServicesCE
 
         private bool ShouldDrawFuelHud()
         {
+            if (IsDashboardOperationalForCurrentVehicle()) return false;
             if (IsFuelGameplaySuspended()) return false;
 
             try
@@ -12610,14 +12535,21 @@ namespace LibertyVehicleServicesCE
         {
             if (!fuelHideHudDuringCutscenes) return false;
 
+            bool scriptedConversationKnown = false;
+            bool scriptedConversation = false;
+            try { scriptedConversationKnown = TryDashboardNativeBoolNoArgs("IS_SCRIPTED_CONVERSATION_ONGOING", out scriptedConversation); }
+            catch { scriptedConversationKnown = false; scriptedConversation = false; }
+
             bool managedKnown;
             bool nativeKnown;
             bool managedCanControl = ProbeManagedPlayerControlSafe(out managedKnown);
             bool nativeControlOn = ProbeNativePlayerControlSafe(out nativeKnown);
 
             if (managedKnown && nativeKnown) return !managedCanControl && !nativeControlOn;
-            if (managedKnown) return !managedCanControl;
-            if (nativeKnown) return !nativeControlOn;
+            if (nativeKnown && !nativeControlOn) return true;
+            if (managedKnown && !managedCanControl) return true;
+
+            if (scriptedConversationKnown && scriptedConversation) return false;
             return false;
         }
 
@@ -12657,12 +12589,10 @@ namespace LibertyVehicleServicesCE
         private bool IsFuelGameplaySuspended()
         {
 
-
             try { if (Function.Call<bool>("IS_SCREEN_FADED_OUT")) return true; } catch { }
             try { if (Function.Call<bool>("IS_SCREEN_FADING")) return true; } catch { }
             try { if (Function.Call<bool>("IS_SCREEN_FADING_OUT")) return true; } catch { }
             try { if (Function.Call<bool>("IS_SCREEN_FADING_IN")) return true; } catch { }
-
 
             return false;
         }
@@ -12683,7 +12613,6 @@ namespace LibertyVehicleServicesCE
                 if (s.DamagedSeconds < 0.0f) s.DamagedSeconds = 0.0f;
             }
         }
-
 
         private void EnforceRefuellingVehicleBetweenFuelTicks()
         {
@@ -12957,7 +12886,6 @@ namespace LibertyVehicleServicesCE
         private void SputterFuelVehicle(Vehicle v, bool critical)
         {
             if (!IsValidVehicle(v) || fuelRefuelling) return;
-
 
             SafeSetVehicleEngine(v, false);
             fuelSputterRestoreVehicleHandle = TryGetVehicleHandle(v);
@@ -13398,11 +13326,6 @@ namespace LibertyVehicleServicesCE
             return Math.Abs(z - station.Z) <= GetFuelStationVerticalTolerance(station, v);
         }
 
-        private float Distance2D(float ax, float ay, float bx, float by)
-        {
-            return (float)Math.Sqrt(Distance2DSquared(ax, ay, bx, by));
-        }
-
         private float Distance2DSquared(float ax, float ay, float bx, float by)
         {
             float dx = ax - bx;
@@ -13417,10 +13340,14 @@ namespace LibertyVehicleServicesCE
         }
         private void SafeSetVehicleHandbrake(Vehicle v, bool on)
         {
-            if (!IsValidVehicle(v)) return;
-            try { Function.Call("SET_CAR_HANDBRAKE", v, on); } catch { }
+            if (!IsValidVehicle(v) || nativeSetCarHandbrakeUnavailable) return;
+            try { Function.Call("SET_CAR_HANDBRAKE", v, on); }
+            catch
+            {
+                nativeSetCarHandbrakeUnavailable = true;
+                Log("NATIVE_UNAVAILABLE: SET_CAR_HANDBRAKE disabled after first failed call.");
+            }
         }
-
 
         private void UpdateOwnedFuelRecordFromState(FuelVehicleState state)
         {
@@ -13458,32 +13385,6 @@ namespace LibertyVehicleServicesCE
             }
             rec.FuelGallons = state.FuelGallons;
             rec.FuelKnown = true;
-        }
-
-        private void LogCurrentPositionForConfig()
-        {
-            try
-            {
-                if (!IsPlayerValid()) { Notify("Position log failed: no player."); return; }
-                Vector3 p = Player.Character.Position;
-                float heading = SafeGetPedHeadingPropertyOnly(Player.Character, 0.0f);
-                string line = "PLAYER X=" + p.X.ToString("0.000") + ", Y=" + p.Y.ToString("0.000") + ", Z=" + p.Z.ToString("0.000") + ", H=" + heading.ToString("0.000") + ". Marker token: Marker=" + p.X.ToString("0.000") + "," + p.Y.ToString("0.000") + "," + p.Z.ToString("0.000") + ",4.5";
-                Log(line);
-                if (IsValidVehicle(lastPlayerVehicle))
-                {
-                    float x, y, z;
-                    if (TryGetVehiclePositionPropertyOnly(lastPlayerVehicle, out x, out y, out z))
-                    {
-                        float h = SafeGetVehicleHeadingPropertyOnly(lastPlayerVehicle, 0.0f);
-                        Log("VEHICLE X=" + x.ToString("0.000") + ", Y=" + y.ToString("0.000") + ", Z=" + z.ToString("0.000") + ", H=" + h.ToString("0.000") + ". Display token: Display=" + x.ToString("0.000") + "," + y.ToString("0.000") + "," + z.ToString("0.000") + "," + h.ToString("0.000") + ". Model=" + GetModelNameForVehicleFast(lastPlayerVehicle) + ".");
-                    }
-                }
-                Notify("Position written to LibertyVehicleServicesCE.log.");
-            }
-            catch (Exception ex)
-            {
-                Log("Position log error: " + ex.GetType().Name + ".");
-            }
         }
 
         private bool TryCharge(int price)
@@ -13677,7 +13578,6 @@ namespace LibertyVehicleServicesCE
             }
             return false;
         }
-
 
         private string Join(List<string> parts, string sep)
         {
