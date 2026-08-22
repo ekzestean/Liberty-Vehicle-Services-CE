@@ -3772,7 +3772,6 @@ namespace LibertyVehicleServicesCE
         private bool blockPlayerControlDuringMenu = true;
         private bool freezePreviewVehicles = true;
         private bool markOwnedVehiclesAsMissionCars = true;
-        private bool spawnOwnedVehiclesOnLoad = true;
         private bool updateOwnedStateWhileDriving = true;
         private const float OwnedVehicleAdoptionRadius = 5.0f;
         private const float OwnedVehicleAdoptionMaxZDelta = 2.5f;
@@ -3800,9 +3799,10 @@ namespace LibertyVehicleServicesCE
         private bool missionNativeFlagSourceLogged = false;
         private bool enableDealerBlips = true;
         private bool enableOwnedVehicleBlips = true;
-        private bool ownedVehicleBlipsOnlyWhenSpawned = false;
         private const float OwnedVehicleRestoreRadius = 95.0f;
         private const int OwnedVehicleRestoreIntervalTicks = 60;
+        private const int OwnedVehicleMaterialisePrepareTicks = 45;
+        private const int OwnedVehicleMaterialiseRetryTicks = 180;
         private int dealerBlipSprite = 79;
         private int fuelStationBlipSprite = 93;
         private const int MetroStationBlipSprite = 58;
@@ -3879,14 +3879,13 @@ namespace LibertyVehicleServicesCE
         private bool captureAllExtraSlots = true;
         private bool saveVehicleDirtLevel = true;
         private int stateSaveIntervalTicks = 300;
-        private int ownedSpawnDelayTicks = 240;
+        private int ownedMaterialisationWarmupTicks = 240;
         private int previewRespawnCooldownTicks = 30;
         private int messageTimer = 0;
         private string messageText = "";
         private int tickCounter = 0;
         private int ownedVehicleRestoreCooldownTicks = 0;
         private List<OwnedVehicleGroundSettleJob> ownedVehicleGroundSettleJobs = new List<OwnedVehicleGroundSettleJob>();
-        private bool attemptedInitialSpawn = false;
         private int nextOwnedId = 1;
         private int previewCooldown = 0;
         private bool delayedWorldInitialisationDone = false;
@@ -4300,6 +4299,8 @@ namespace LibertyVehicleServicesCE
             public float FuelCapacityGallons;
             public int DirtCaptureNextMs;
             public int GroundWatchCooldownTick;
+            public int MaterialisePrepareUntilTick;
+            public int MaterialiseRetryUntilTick;
         }
 
         private class OwnedVehicleGroundSettleJob
@@ -4384,7 +4385,7 @@ namespace LibertyVehicleServicesCE
             this.Tick += new EventHandler(OnTick);
             this.KeyDown += new GTA.KeyEventHandler(OnKeyDown);
             Notify("Liberty Vehicle Services CE loaded");
-            Log("Core loaded. Episode detection, story-progress checks, LCP bridge detection, workshop initialisation, blip creation and owned-car spawning will start after the save has fully entered the world. VehicleDefs=" + vehicleByModel.Count.ToString() + ", Dealers=" + dealers.Count.ToString() + ", RegistrationPoints=" + registrationPoints.Count.ToString() + ", Owned=" + ownedVehicles.Count.ToString() + ". Modules: dealers=" + dealersEnabled.ToString() + ", registration=" + streetRegistrationEnabled.ToString() + ", ownership=" + ownershipEnabled.ToString() + ", workshop=" + workshopEnabled.ToString() + ", workshopExternal=" + workshopModuleExternal.ToString() + ", fuel=" + fuelModuleEnabled.ToString() + ", metro=" + metroStationsEnabled.ToString() + ", dashboard=" + dashboardEnabled.ToString() + ".");
+            Log("Core loaded. Episode detection, story-progress checks, LCP bridge detection, workshop initialisation, blip creation and owned-car materialisation will start after the save has fully entered the world. VehicleDefs=" + vehicleByModel.Count.ToString() + ", Dealers=" + dealers.Count.ToString() + ", RegistrationPoints=" + registrationPoints.Count.ToString() + ", Owned=" + ownedVehicles.Count.ToString() + ". Modules: dealers=" + dealersEnabled.ToString() + ", registration=" + streetRegistrationEnabled.ToString() + ", ownership=" + ownershipEnabled.ToString() + ", workshop=" + workshopEnabled.ToString() + ", workshopExternal=" + workshopModuleExternal.ToString() + ", fuel=" + fuelModuleEnabled.ToString() + ", metro=" + metroStationsEnabled.ToString() + ", dashboard=" + dashboardEnabled.ToString() + ".");
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -4482,18 +4483,7 @@ namespace LibertyVehicleServicesCE
 
                 if (ownershipEnabled)
                 {
-                    if (!attemptedInitialSpawn)
-                    {
-                        if (ownedSpawnDelayTicks <= 0)
-                        {
-                            attemptedInitialSpawn = true;
-                            if (spawnOwnedVehiclesOnLoad) SpawnOwnedVehiclesFromSave();
-                        }
-                        else
-                        {
-                            ownedSpawnDelayTicks--;
-                        }
-                    }
+                    if (ownedMaterialisationWarmupTicks > 0) ownedMaterialisationWarmupTicks--;
                     UpdateOwnedVehicleGroundSettles();
                     UpdateOwnedVehicles();
                     UpdateOwnedVehiclePlateApplications();
@@ -4767,8 +4757,7 @@ namespace LibertyVehicleServicesCE
             {
                 Log("Episode changed from " + currentEpisodeKey + " to " + detected + "; owned vehicles will be filtered by the new episode.");
                 currentEpisodeKey = detected;
-                attemptedInitialSpawn = false;
-                ownedSpawnDelayTicks = 60;
+                ownedMaterialisationWarmupTicks = 60;
             }
         }
 
@@ -7520,10 +7509,31 @@ namespace LibertyVehicleServicesCE
                 rec.VehicleRef = null;
                 rec.WorldHandle = 0;
 
-                if (restoreScanNow && IsPlayerNearOwnedVehicleSavedPosition(rec, OwnedVehicleRestoreRadius))
+                bool nearSavedPosition = IsPlayerNearOwnedVehicleSavedPosition(rec, OwnedVehicleRestoreRadius);
+                if (!nearSavedPosition)
                 {
-                    if (!TryAdoptExistingOwnedVehicleFromWorld(rec)) SpawnOwnedVehicle(rec, false);
+                    rec.MaterialisePrepareUntilTick = 0;
+                    continue;
                 }
+                if (ownedMaterialisationWarmupTicks > 0)
+                {
+                    RequestOwnedVehicleMaterialisationArea(rec);
+                    continue;
+                }
+                if (!restoreScanNow || rec.MaterialiseRetryUntilTick > tickCounter) continue;
+
+                RequestOwnedVehicleMaterialisationArea(rec);
+                if (rec.MaterialisePrepareUntilTick <= 0)
+                {
+                    rec.MaterialisePrepareUntilTick = tickCounter + OwnedVehicleMaterialisePrepareTicks;
+                    continue;
+                }
+                if (tickCounter < rec.MaterialisePrepareUntilTick) continue;
+
+                rec.MaterialisePrepareUntilTick = 0;
+                if (!TryAdoptExistingOwnedVehicleFromWorld(rec)) SpawnOwnedVehicle(rec, false);
+                if (IsValidVehicle(rec.VehicleRef)) rec.MaterialiseRetryUntilTick = 0;
+                else rec.MaterialiseRetryUntilTick = tickCounter + OwnedVehicleMaterialiseRetryTicks;
             }
 
             if (ownedVehicleRestoreCooldownTicks > 0) ownedVehicleRestoreCooldownTicks--;
@@ -7630,7 +7640,6 @@ namespace LibertyVehicleServicesCE
 
                 if (job.Attempts >= 12)
                 {
-
                     job.Record.VehicleRef = v;
                     job.Record.WorldHandle = TryGetVehicleHandle(v);
                     job.Record.GroundWatchCooldownTick = tickCounter + 1800;
@@ -7645,21 +7654,28 @@ namespace LibertyVehicleServicesCE
         private void TryNudgeOwnedVehicleToSavedGround(Vehicle v, OwnedVehicleRecord rec)
         {
             if (!IsValidVehicle(v) || rec == null) return;
+            RequestOwnedVehicleMaterialisationArea(rec);
             try { Function.Call("FREEZE_CAR_POSITION", v, false); } catch { }
             try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
             try { Function.Call("SET_CAR_ON_GROUND_PROPERLY", v); } catch { }
             try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
             try { Function.Call("SET_CAR_HEADING", v, rec.Heading); } catch { }
 
-            if (IsVehicleInAirSafe(v))
-            {
-                float x;
-                float y;
-                float z;
-                if (TryGetVehiclePosition(v, out x, out y, out z))
-                {
-                }
-            }
+            if (!IsVehicleInAirSafe(v)) return;
+
+            float x;
+            float y;
+            float z;
+            if (!TryGetVehiclePosition(v, out x, out y, out z)) return;
+            float dx = x - rec.X;
+            float dy = y - rec.Y;
+            float dz = z - rec.Z;
+            if (dx * dx + dy * dy > 100.0f || Math.Abs(dz) > 10.0f) return;
+
+            try { Function.Call("SET_CAR_COORDINATES", v, rec.X, rec.Y, rec.Z + 0.75f); } catch { }
+            try { Function.Call("SET_CAR_HEADING", v, rec.Heading); } catch { }
+            try { Function.Call("SET_CAR_ON_GROUND_PROPERLY", v); } catch { }
+            try { Function.Call("SET_CAR_FORWARD_SPEED", v, 0.0f); } catch { }
         }
 
         private bool EnsureOwnedVehicleGroundedIfFloating(OwnedVehicleRecord rec, Vehicle v)
@@ -7718,6 +7734,12 @@ namespace LibertyVehicleServicesCE
             return false;
         }
 
+        private void RequestOwnedVehicleMaterialisationArea(OwnedVehicleRecord rec)
+        {
+            if (rec == null) return;
+            try { Function.Call("REQUEST_COLLISION_AT_POSN", rec.X, rec.Y, rec.Z); } catch { }
+        }
+
         private void ClearOwnedVehicleBlip(OwnedVehicleRecord rec, string purpose)
         {
             if (rec == null) return;
@@ -7727,19 +7749,6 @@ namespace LibertyVehicleServicesCE
                 rec.BlipRef = null;
             }
             rec.BlipIsFallback = false;
-        }
-
-        private void SpawnOwnedVehiclesFromSave()
-        {
-            for (int i = 0; i < ownedVehicles.Count; i++)
-            {
-                OwnedVehicleRecord rec = ownedVehicles[i];
-                if (!OwnedRecordBelongsToCurrentEpisode(rec)) continue;
-                if (rec.Destroyed) continue;
-                if (IsValidVehicle(rec.VehicleRef)) continue;
-                if (TryAdoptExistingOwnedVehicleFromWorld(rec)) continue;
-                SpawnOwnedVehicle(rec, false);
-            }
         }
 
         private bool TryAdoptExistingOwnedVehicleFromWorld(OwnedVehicleRecord rec)
@@ -7774,7 +7783,6 @@ namespace LibertyVehicleServicesCE
                 if (!IsValidVehicle(best)) return false;
                 ClearOwnedVehicleBlip(rec, "owned vehicle fallback blip " + rec.Id);
                 ApplyVehicleState(best, rec);
-                PlaceVehicleOnGroundSafe(best, rec.X, rec.Y, rec.Z, rec.Heading);
                 ScheduleOwnedVehicleGroundSettle(rec, best, "adoption");
                 if (markOwnedVehiclesAsMissionCars) MarkVehicleAsMission(best);
                 rec.VehicleRef = best;
@@ -7880,17 +7888,17 @@ namespace LibertyVehicleServicesCE
             {
                 pos = new Vector3(activeRegistrationPoint.X + 4.0f, activeRegistrationPoint.Y, activeRegistrationPoint.Z + 0.2f);
             }
+            RequestOwnedVehicleMaterialisationArea(rec);
             Vehicle v = TryCreateVehicleByName(rec.ModelName, pos, rec.Heading);
             if (!IsValidVehicle(v))
             {
                 Log("Could not spawn owned vehicle " + rec.Id + " model=" + rec.ModelName + ".");
                 return;
             }
-            RememberOwnedSpawnZLift(rec, v, pos.Z, "created");
+            RememberOwnedSpawnZLift(rec, v, pos.Z);
             ClearOwnedVehicleBlip(rec, "owned vehicle fallback blip " + rec.Id);
             ApplyVehicleState(v, rec);
-            PlaceVehicleOnGroundSafe(v, rec.X, rec.Y, rec.Z, rec.Heading);
-            RememberOwnedSpawnZLift(rec, v, pos.Z, "after-place-ground");
+            RememberOwnedSpawnZLift(rec, v, pos.Z);
             ownedSkipPositionCaptureUntilTick[rec] = tickCounter + 1800;
             ScheduleOwnedVehicleGroundSettle(rec, v, "spawn");
             if (markOwnedVehiclesAsMissionCars) MarkVehicleAsMission(v);
@@ -8912,7 +8920,7 @@ namespace LibertyVehicleServicesCE
             return vehicleZ - lift;
         }
 
-        private void RememberOwnedSpawnZLift(OwnedVehicleRecord rec, Vehicle v, float requestedZ, string stage)
+        private void RememberOwnedSpawnZLift(OwnedVehicleRecord rec, Vehicle v, float requestedZ)
         {
             if (rec == null || rec.ModelName == null || !IsValidVehicle(v)) return;
             float x; float y; float z;
@@ -10210,7 +10218,7 @@ namespace LibertyVehicleServicesCE
                 {
                     blip = TryCreateVehicleBlip(rec.VehicleRef, "owned vehicle blip " + rec.Id);
                 }
-                if (blip == null && (!ownedVehicleBlipsOnlyWhenSpawned || !hasWorldVehicle))
+                if (blip == null)
                 {
                     blip = TryCreateCoordinateBlip(new Vector3(rec.X, rec.Y, rec.Z), "owned vehicle fallback blip " + rec.Id);
                     fallback = blip != null;
